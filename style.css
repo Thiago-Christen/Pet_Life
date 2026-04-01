@@ -1,0 +1,86 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    background-color: darkmagenta;
+    margin: 0;
+    padding: 0;
+}
+
+h1,p,a{
+    color: darkmagenta;
+    text-align: center;
+    text-decoration: none;
+}
+
+a{
+    margin-top: 15px;
+}
+
+h1{
+    margin-bottom: 0;
+}
+
+p{
+    font-size:large;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    max-height: 700px;
+    margin: 4rem 4rem;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.image_container{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem; /* opcional, só pra dar espaço */
+}
+
+img{
+    max-width: 200px;
+    height: auto;
+    
+
+}
+
+label {
+    color:  darkmagenta;
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+input {
+  width: 98%;
+  height: 20px;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  background-color: rgb(240, 203, 72);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: #C5A572;
+  color: #000;
+}
+
