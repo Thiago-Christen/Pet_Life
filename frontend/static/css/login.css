@@ -3,15 +3,19 @@
 }
 
 body{
-    background-color: darkmagenta;
+    background-color: #560898;
     margin: 0;
     padding: 0;
 }
 
+b{
+    color: rgb(240, 203, 72);
+}
+
 h1,p,a{
-    color: darkmagenta;
+    color: #560898;
     text-align: center;
-    text-decoration: none;
+    text-decoration:max- none;
 }
 
 a{
@@ -26,33 +30,44 @@ p{
     font-size:large;
 }
 
+.container{
+    display: flex;
+    align-items: center;
+    margin: 3.5rem auto;
+    gap: 200px;
+}
+
 form{
     display: flex;
     flex-direction: column;
-    max-width: 400px;
+    max-width: 600px;
     max-height: 700px;
-    margin: 4rem 4rem;
+    margin-left: 100px;
     padding: 2rem;
     background-color: white;
     border-radius: 15px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.image_container{
+.logo{
     display: flex;
     justify-content: center;
-    margin-bottom: 1rem; /* opcional, só pra dar espaço */
-}
-
-img{
+    margin: 1rem auto;
     max-width: 200px;
     height: auto;
-    
-
 }
 
+.imagem_pets{
+    display: flex;
+    justify-content: center;
+    margin-right: 180px;
+    margin-top: 220px;
+    max-width: 500px;
+}
+
+
 label {
-    color:  darkmagenta;
+    color:  #560898;
     display: block;
     margin-top: 1rem;
     font-weight: bold;
