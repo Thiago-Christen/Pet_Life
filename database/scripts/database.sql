@@ -1,4 +1,4 @@
-CREATE DATABASE petlife;
+CREATE DATABASE IF NOT EXISTS petlife CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE petlife;
 
 CREATE TABLE usuario (
@@ -6,68 +6,61 @@ CREATE TABLE usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-    num_telefone VARCHAR(15), 
+    num_telefone VARCHAR(15) DEFAULT NULL,
     data_nascimento DATE NOT NULL,
-    cpf VARCHAR(14) NOT NULL UNIQUE,
+    cpf CHAR(11) NOT NULL UNIQUE,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Pet (
+CREATE TABLE pet (
     pet_id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    especie VARCHAR(50),
-    raca VARCHAR(50),
-    idade INT,
+    genero ENUM('macho', 'femea') NOT NULL,
+    especie ENUM('gato', 'cachorro') NOT NULL,
+    raca VARCHAR(50)   DEFAULT NULL,
+    data_nascimento DATE NOT NULL,
+    peso DECIMAL(5,2)  DEFAULT NULL,
+    porte ENUM('pequeno', 'medio', 'grande') NOT NULL,
+    foto VARCHAR(255)  DEFAULT NULL,
     fk_usuario_id INT NOT NULL,
-    FOREIGN KEY (fk_usuario_id) REFERENCES usuario(id)
+    FOREIGN KEY (fk_usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
 );
 
-CREATE TABLE RegistroDiario (
+CREATE TABLE registrodiario (
     registro_id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo ENUM('passeio', 'alimentacao', 'brincadeira', 'vacina', 'consulta', 'medicamento', 'observacao') NOT NULL,
     data DATE NOT NULL,
-    atividade VARCHAR(200),
-    observacoes TEXT,
+    observacoes TEXT DEFAULT NULL,
     fk_pet_id INT NOT NULL,
-    FOREIGN KEY (fk_pet_id) REFERENCES Pet(pet_id)
+    FOREIGN KEY (fk_pet_id) REFERENCES pet(pet_id) ON DELETE CASCADE
 );
 
-INSERT INTO usuario (nome, email, senha, num_telefone, data_nascimento, cpf)
-VALUES (
-    'Joao Abora',
-    'abora@gmail.com',
-    '123456',
-    '(41) 99999-9999',
-    '2002-08-10',
-    '123.456.789-00'
-);
-
-INSERT INTO Pet (nome, especie, raca, idade, fk_usuario_id)
-VALUES (
-    'Rex',
-    'Cachorro',
-    'Vira-lata',
-    3,
-    1
-);
-
-INSERT INTO RegistroDiario (data, atividade, observacoes, fk_pet_id)
-VALUES (
-    '2026-04-01',
-    'Passeio',
-    'Passeio no parque',
-    1
-);
-
-SELECT 
+SELECT
     u.id AS id_usuario,
-    u.nome AS nome_usuario,
+    u.nome AS dono,
     p.pet_id,
-    p.nome AS nome_pet,
-    r.registro_id,
+    p.nome AS pet,
+    p.especie,
+    p.genero,
+    p.raca,
+    p.data_nascimento,
+    TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) AS idade_anos,
+    p.peso,
+    p.porte
+FROM pet p
+JOIN usuario u ON p.fk_usuario_id = u.id
+ORDER BY u.id;
+
+SELECT
+    u.id AS id_usuario,
+    u.nome AS dono,
+    p.nome AS pet,
+    r.tipo,
     r.data,
-    r.atividade,
     r.observacoes
-FROM RegistroDiario r
-JOIN Pet p ON r.fk_pet_id = p.pet_id
-JOIN usuario u ON p.fk_usuario_id = u.id;
-DROP DATABASE petlife;
+FROM registrodiario r
+JOIN pet p ON r.fk_pet_id     = p.pet_id
+JOIN usuario u ON p.fk_usuario_id = u.id
+ORDER BY r.data;
+
+ 

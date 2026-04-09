@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetLife - Resultado do Login</title>
+
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="resultado-box">
+
+            <img class="logo" src="/static/img/logo_petLife.png" alt="">
+
+            <div class="msg-box 
+                {{ 'msg-erro' if 'Erro' in request.session.get('mensagem_header','') else 'msg-sucesso' }}">
+                
+                <h2>
+                    {{ request.session.get("mensagem_header") }}
+                </h2>
+
+                <p>
+                    {{ request.session.get("mensagem") }}
+                </p>
+            </div>
+
+            <div class="acoes">
+                <a href="/login">
+                    <button>Voltar</button>
+                </a>
+
+                {% if request.session.get("usuario_id") %}
+                <a href="/usersList">
+                    <button>Continuar</button>
+                </a>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                fetch("/reset_session", { method: "POST" });
+            }, 2000);
+        });
+    </script>
+
+</body>
+</html>

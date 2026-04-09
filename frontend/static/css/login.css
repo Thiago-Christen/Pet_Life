@@ -99,3 +99,50 @@ button:hover {
   color: #000;
 }
 
+.resultado-box {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin-left: 100px;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.acoes {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.msg-box {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.msg-sucesso {
+    background-color: #E6F9EC;
+    border: 2px solid #2ecc71;
+    color: #2e7d32;
+}
+
+.msg-erro {
+    background-color: #FFE6E6;
+    border: 2px solid #e74c3c;
+    color: #c0392b;
+}
+
+.msg-box h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.msg-box p {
+    margin-top: 8px;
+    font-size: 16px;
+}

@@ -5,20 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetLife</title>
+    <link rel="icon" href="/static/img/icone.ico" type="image/png">
     <link rel="stylesheet" href="../static/css/register.css">
 </head>
-
 <body>
     <div class="container">
-        <form id="registerForm" novalidate>
+        <form id="registerForm" action="/register_exe" method="post" novalidate>
             <img class="logo" src="../static/img/logo_petLife.png" alt="Logo PetLife">
 
             <h1>Crie sua conta</h1>
             <p>Cadastre-se para cuidar do seu Pet com todo carinho</p>
 
+            {% if flash %}
+                <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+                    <h2>{{ flash.header }}</h2>
+                    <p>{{ flash.texto }}</p>
+                </div>
+            {% endif %}
+
             <div class="fields">
                 <label for="name">Nome Completo</label>
-                <input type="text" id="name" name="name" placeholder="Nome completo">
+                <input type="text" id="name" name="nome" placeholder="Nome completo">
                 <small class="error" id="nameError"></small>
             </div>
 
@@ -63,7 +70,7 @@
 
             <button type="submit">Cadastrar</button>
 
-            <a href="../pages/login.html" class="link">Já tem uma conta?</a>
+            <a href="/login" class="link">Já tem uma conta?</a>
         </form>
 
         <img class="imagem_pets" src="../static/img/login_cat_dog.png" alt="Pets">

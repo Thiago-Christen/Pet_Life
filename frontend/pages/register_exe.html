@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petlife</title>
+    <link rel="stylesheet" href="/static/css/register.css">
+</head>
+<body>
+    
+</body>
+</html>
+<div class="container">
+
+    <div class="resultado-box">
+
+        <img class="logo" src="/static/img/logo_petLife.png" alt="">
+
+        <h1>Pet<b>Life</b></h1>
+
+        <div class="msg-box 
+           {% if request.session.get("flash") %}
+                {% set flash = request.session.get("flash") %}
+                <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+                    <h2>{{ flash.header }}</h2>
+                    <p>{{ flash.texto }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="acoes">
+            <a href="/register">
+                <button>Voltar</button>
+            </a>
+
+            {% if request.session.get("flash") and request.session.get("flash").tipo == 'sucesso' %}
+                <a href="/login">
+                    <button>Ir para login</button>
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <img class="imagem_pets" src="/static/img/login_cat_dog.png" alt="">
+
+</div>

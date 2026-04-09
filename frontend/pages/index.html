@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/login.css">
+</head>
+<body>
+    {% if flash %}
+        <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+            <h2>{{ flash.header }}</h2>
+            <p>{{ flash.texto }}</p>
+        </div>
+    {% endif %}
+</body>
+</html>

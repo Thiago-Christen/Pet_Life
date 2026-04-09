@@ -170,6 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     valid = false;
                 }
             }
+            
         }
 
         const numbersOnly = onlyNumbers(cpfCnpj);
@@ -197,9 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
             showError(confirmPasswordError, "As senhas não coincidem.");
             valid = false;
         }
-
-        if (valid) {
-            alert("Cadastro válido!");
+        if (valid === true){
             form.submit();
         }
     });

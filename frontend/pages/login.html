@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetLife</title>
+    <link rel="icon" href="/static/img/icone.ico" type="image/png">
     <link rel="stylesheet" href="../static/css/login.css">
 </head>
 <body>
     <div class="container">
-        <form>
+        <form action="/login_exe" method="post">
             <img class="logo" src="../static/img/logo_petLife.png" alt="">
             <h1>Boas vindas ao Pet<b>Life</b></h1>
             <p>Faça o login na sua conta</p>
@@ -19,9 +20,15 @@
             <label for="email">Senha</label>
             <input type="password" id="senha" name="senha" placeholder="Senha" required>
 
-        <button type="submit">Cadastrar</button>
-        <a href="../pages/register.html">Ainda não tem uma conta?</a>
-    </form>
+        <button type="submit">Entrar</button>
+        <a href="../pages/register">Ainda não tem uma conta?</a>
+
+        {% if flash %}
+        <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+            <h2>{{ flash.header }}</h2>
+            <p>{{ flash.texto }}</p>
+        </div>
+        {% endif %}
     <img class="imagem_pets" src="../static/img/login_cat_dog.png" alt="">
     </div>
 </body>
