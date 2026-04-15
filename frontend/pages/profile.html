@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil | PetLife{% endblock %}
+
+{% block content %}
+<main class="profile-page">
+    <div class="container-lg py-4">
+
+        <header class="topbar mx-auto">
+            <div class="topbar-left">
+                <div class="brand">
+                    <a href="/index">
+                        <img src="{{ request.url_for('static', path='img/logo_petLife.png') }}" alt="PetLife Logo" class="brand-logo">
+                    </a>
+                </div>
+            </div>
+
+            <nav class="topbar-nav">
+                <a href="/index" class="nav-item">
+                    <i class="fa-solid fa-paw"></i>
+                    <span>Dashboard</span>
+                </a>
+
+      <!--        <a href="/dicas" class="nav-item">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>Dicas &amp; Artigos</span>
+                </a>-->  
+            </nav>
+
+            <div class="topbar-right">
+                <a href="/profile" class="profile" aria-label="Perfil">
+                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                </a>
+
+                <div class="notification">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-notification">1</span>
+                </div>
+            </div>
+        </header>
+
+        {% if flash %}
+        <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+            <h2>{{ flash.header }}</h2>
+            <p>{{ flash.texto }}</p>
+        </div>
+        {% endif %}
+
+        <section class="profile-hero mt-4">
+
+            <div class="profile-banner card border-0 rounded-5 overflow-hidden shadow">
+                <div class="profile-banner-accent"></div>
+
+                <div class="card-body p-4 p-md-5 profile-banner-body">
+                    <div class="profile-avatar-wrap">
+                        <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Foto do perfil" class="profile-avatar">
+                    </div>
+
+                    <div class="profile-banner-info">
+                        <h1 class="mb-2">{{ user.nome }}</h1>
+                        <p class="profile-subtitle mb-3">Perfil do Usuário</p>
+
+                        <div class="d-flex flex-wrap gap-3 profile-meta">
+                            <span><i class="fa-solid fa-envelope"></i> {{ user.email }}</span>
+                            <span><i class="fa-solid fa-phone"></i> {{ user.num_telefone }}</span>
+                            <span><i class="fa-solid fa-id-card"></i> {{ user.cpf }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-grid mt-4">
+            <div class="row g-3">
+                <div class="col-12 col-lg-7">
+                    <div class="card border-0 rounded-5 shadow-sm h-100 profile-card">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom profile-card-header">
+                                <h2 class="profile-section-title mb-0">
+                                    <i class="fa-solid fa-user"></i>
+                                    Dados da Conta
+                                </h2>
+
+                                <button type="button" class="btn btn-sm btn-outline-dark-subtle btn-mini-edit js-edit-toggle" data-target="account-form">
+                                    <i class="fa-solid fa-pen"></i>
+                                    Editar dados
+                                </button>
+                            </div>
+
+                            <form id="account-form" action="/profile_update" method="post" class="needs-edit">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label for="nome" class="form-label profile-label">Nome</label>
+                                        <input type="text" id="nome" name="nome" class="form-control profile-input" value="{{ user.nome }}" disabled required>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label for="email" class="form-label profile-label">E-mail</label>
+                                        <input type="email" id="email" name="email" class="form-control profile-input" value="{{ user.email }}" disabled required>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label for="num_telefone" class="form-label profile-label">Telefone</label>
+                                        <input type="text" id="num_telefone" name="num_telefone" class="form-control profile-input" value="{{ user.num_telefone }}" disabled required>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label for="data_nascimento" class="form-label profile-label">Data de Nascimento</label>
+                                        <input type="date" id="data_nascimento" name="data_nascimento" class="form-control profile-input" value="{{ user.data_nascimento }}" disabled required>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label for="cpf" class="form-label profile-label">CPF</label>
+                                        <input type="text" id="cpf" name="cpf" class="form-control profile-input" value="{{ user.cpf }}" disabled required>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label for="senha_account" class="form-label profile-label">Nova Senha <span class="profile-label-note">(opcional)</span></label>
+                                        <input type="password" id="senha_account" name="senha" class="form-control profile-input" placeholder="Digite uma nova senha" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="submit" class="btn btn-brand-purple js-save-btn" disabled>
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        Salvar dados
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-5">
+                    <div class="card border-0 rounded-5 shadow-sm h-100 profile-card">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom profile-card-header">
+                                <h2 class="profile-section-title mb-0">
+                                    <i class="fa-solid fa-gear"></i>
+                                    Configurações
+                                </h2>
+
+                                <button type="button" class="btn btn-sm btn-outline-dark-subtle btn-mini-edit js-edit-toggle" data-target="settings-form">
+                                    <i class="fa-solid fa-pen"></i>
+                                    Editar config.
+                                </button>
+                            </div>
+
+                            <form id="settings-form" action="/profile_update" method="post" class="d-flex flex-column flex-grow-1">
+                                <input type="hidden" name="nome" value="{{ user.nome }}">
+                                <input type="hidden" name="email" value="{{ user.email }}">
+                                <input type="hidden" name="num_telefone" value="{{ user.num_telefone }}">
+                                <input type="hidden" name="data_nascimento" value="{{ user.data_nascimento }}">
+                                <input type="hidden" name="cpf" value="{{ user.cpf }}">
+
+                                <div class="profile-settings-list">
+                                    <div class="profile-setting-row">
+                                        <div class="profile-setting-label">
+                                            <i class="fa-solid fa-bell"></i>
+                                            <span>Notificações</span>
+                                        </div>
+
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input settings-switch" type="checkbox" name="notificacoes" checked disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-setting-row align-items-start flex-column">
+                                        <div class="profile-setting-label mb-2">
+                                            <i class="fa-solid fa-unlock-keyhole"></i>
+                                            <span>Trocar Senha</span>
+                                        </div>
+
+                                        <input
+                                            type="password"
+                                            id="senha_settings"
+                                            name="senha"
+                                            class="form-control profile-input"
+                                            placeholder="Digite uma nova senha"
+                                            disabled
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-auto pt-3">
+                                    <button type="submit" class="btn btn-brand-gold js-save-btn" disabled>
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        Salvar configurações
+                                    </button>
+                                </div>
+                            </form>
+
+                            <button type="button" id="delete-account-btn" class="btn btn-danger mt-3 btn-delete-account">
+                                <i class="fa-solid fa-trash-can"></i>
+                                Excluir Conta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+document.querySelectorAll(".js-edit-toggle").forEach((button) => {
+    button.addEventListener("click", () => {
+        const form = document.getElementById(button.dataset.target);
+        if (!form) return;
+
+        const fields = form.querySelectorAll("input:not([type='hidden'])");
+        const saveBtn = form.querySelector(".js-save-btn");
+
+        const isDisabled = [...fields].every(field => field.disabled);
+
+        fields.forEach(field => field.disabled = !isDisabled);
+
+        if (saveBtn) saveBtn.disabled = !isDisabled;
+
+        button.innerHTML = isDisabled
+            ? '<i class="fa-solid fa-ban"></i> Bloquear edição'
+            : '<i class="fa-solid fa-pen"></i> ' + (form.id === "account-form" ? "Editar dados" : "Editar config.");
+    });
+});
+
+document.getElementById("delete-account-btn")?.addEventListener("click", async () => {
+    const confirmed = confirm("Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.");
+    if (!confirmed) return;
+
+    const response = await fetch("/profile_delete", { method: "DELETE" });
+    const data = await response.json();
+
+    if (data.success) {
+        window.location.href = "/login";
+    } else {
+        alert(data.error || "Não foi possível excluir a conta.");
+    }
+});
+</script>
+{% endblock %}
