@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PetLife - Diário do Pet</title>
+  <link rel="stylesheet" href="style_diario.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="logo_petLife.png" alt="PetLife" class="navbar-logo-img"/>
+    </div>
+    <div class="navbar-links">
+      <a href="#" class="nav-link">Dashboard</a>
+      <a href="#" class="nav-link active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Diário do Pet
+      </a>
+      <a href="#" class="nav-link">Dicas &amp; Artigos</a>
+    </div>
+    <div class="navbar-user">
+      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="user-avatar"/>
+      <span class="user-caret">&#9660;</span>
+      <div class="notif-bell">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#f5a623" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-badge">1</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <div class="breadcrumb">
+      <span class="breadcrumb-arrow">&#8249;</span>
+      <span>Diário do Pet</span>
+    </div>
+
+    <!-- Diary Card -->
+    <div class="diary-card">
+
+      <!-- Header laranja -->
+      <div class="diary-header">
+        <div class="diary-header-left">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <div>
+            <h1 class="diary-title">Diário do Pet</h1>
+            <p class="diary-subtitle">Registre os momentos especiais do Angel</p>
+          </div>
+        </div>
+        <div class="diary-header-right">
+          <!-- Seletor de pet -->
+          <div class="pet-selector">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Beagle_puppy_Cadet.jpg/320px-Beagle_puppy_Cadet.jpg" alt="Angel" class="pet-selector-img"/>
+            <span>Angel</span>
+            <span class="caret">&#9660;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diary Body -->
+      <div class="diary-body">
+
+        <!-- Coluna Esquerda: filtros + lista de entradas -->
+        <div class="diary-left">
+
+          <!-- Filtros -->
+          <div class="filter-bar">
+            <div class="filter-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#4a0080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <span>Filtrar por:</span>
+            </div>
+            <div class="filter-tags">
+              <span class="filter-tag active">Todos</span>
+              <span class="filter-tag">Saúde</span>
+              <span class="filter-tag">Alimentação</span>
+              <span class="filter-tag">Banho</span>
+              <span class="filter-tag">Atividade</span>
+            </div>
+          </div>
+
+          <!-- Entradas do diário -->
+          <div class="entries-list">
+
+            <!-- Entrada 1 - Saúde -->
+            <div class="entry-card entry-saude">
+              <div class="entry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#e74c3c" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div class="entry-content">
+                <div class="entry-header">
+                  <span class="entry-tag tag-saude">Saúde</span>
+                  <span class="entry-date"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 02/04/2026</span>
+                </div>
+                <h3 class="entry-title">Consulta veterinária</h3>
+                <p class="entry-text">Angel foi ao veterinário para check-up anual. Está com ótima saúde! Peso: 12,4 kg. Vacinas em dia.</p>
+              </div>
+              <div class="entry-actions">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </div>
+            </div>
+
+            <!-- Entrada 2 - Alimentação -->
+            <div class="entry-card entry-alim">
+              <div class="entry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#f5a623" viewBox="0 0 256 256"><path d="M212,80a28,28,0,1,0,28,28A28,28,0,0,0,212,80Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,120ZM72,108a28,28,0,1,0-28,28A28,28,0,0,0,72,108ZM44,120a12,12,0,1,1,12-12A12,12,0,0,1,44,120ZM92,88A28,28,0,1,0,64,60,28,28,0,0,0,92,88Zm0-40A12,12,0,1,1,80,60,12,12,0,0,1,92,48Zm72,40a28,28,0,1,0-28-28A28,28,0,0,0,164,88Zm0-40a12,12,0,1,1-12,12A12,12,0,0,1,164,48Zm23.12,100.86a35.3,35.3,0,0,1-16.87-21.14,44,44,0,0,0-84.5,0A35.25,35.25,0,0,1,69,148.82,40,40,0,0,0,88,224a39.48,39.48,0,0,0,15.52-3.13,64.09,64.09,0,0,1,48.87,0,40,40,0,0,0,34.73-72ZM168,208a24,24,0,0,1-9.45-1.93,80.14,80.14,0,0,0-61.19,0,24,24,0,0,1-20.71-43.26,51.22,51.22,0,0,0,24.46-30.67,28,28,0,0,1,53.78,0,51.27,51.27,0,0,0,24.53,30.71A24,24,0,0,1,168,208Z"></path></svg>
+              </div>
+              <div class="entry-content">
+                <div class="entry-header">
+                  <span class="entry-tag tag-alim">Alimentação</span>
+                  <span class="entry-date"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 01/04/2026</span>
+                </div>
+                <h3 class="entry-title">Mudança de ração</h3>
+                <p class="entry-text">Iniciamos a transição para a nova ração premium. Mixing 70% antiga e 30% nova por 7 dias.</p>
+              </div>
+              <div class="entry-actions">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </div>
+            </div>
+
+            <!-- Entrada 3 - Atividade -->
+            <div class="entry-card entry-ativ">
+              <div class="entry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#27ae60" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div class="entry-content">
+                <div class="entry-header">
+                  <span class="entry-tag tag-ativ">Atividade</span>
+                  <span class="entry-date"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 30/03/2026</span>
+                </div>
+                <h3 class="entry-title">Passeio no parque</h3>
+                <p class="entry-text">Angel adorou o passeio! Correu por 45 minutos e brincou com outros cachorros no parque da cidade.</p>
+              </div>
+              <div class="entry-actions">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </div>
+            </div>
+
+            <!-- Entrada 4 - Medicamento -->
+            <div class="entry-card entry-med">
+              <div class="entry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#8e44ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10.5 20.5 3.5 13.5a5 5 0 0 1 7.07-7.07l7 7a5 5 0 0 1-7.07 7.07z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>
+              </div>
+              <div class="entry-content">
+                <div class="entry-header">
+                  <span class="entry-tag tag-med">Medicamento</span>
+                  <span class="entry-date"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 28/03/2026</span>
+                </div>
+                <h3 class="entry-title">Vermifugação</h3>
+                <p class="entry-text">Administrado Drontal conforme prescrição do veterinário. Próxima dose em 3 meses.</p>
+              </div>
+              <div class="entry-actions">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </div>
+            </div>
+
+            <!-- Entrada 5 - Banho -->
+            <div class="entry-card entry-banho">
+              <div class="entry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#2980b9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+              </div>
+              <div class="entry-content">
+                <div class="entry-header">
+                  <span class="entry-tag tag-banho">Banho &amp; Tosa</span>
+                  <span class="entry-date"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 25/03/2026</span>
+                </div>
+                <h3 class="entry-title">Banho e tosa completa</h3>
+                <p class="entry-text">Angel foi ao petshop para banho, tosa e corte de unhas. Saiu cheiroso e lindo!</p>
+              </div>
+              <div class="entry-actions">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </div>
+            </div>
+
+          </div><!-- end entries-list -->
+        </div>
+
+        <!-- Coluna Direita: novo registro + resumo -->
+        <div class="diary-right">
+
+          <!-- Novo Registro -->
+          <div class="section-card">
+            <div class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#4a0080" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <strong>Novo Registro</strong>
+            </div>
+            <div class="form-group">
+              <label>Categoria</label>
+              <select class="form-select">
+                <option>Saúde</option>
+                <option>Alimentação</option>
+                <option>Atividade</option>
+                <option>Medicamento</option>
+                <option>Banho &amp; Tosa</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Data</label>
+              <input type="date" class="form-input" value="2026-04-07"/>
+            </div>
+            <div class="form-group">
+              <label>Título</label>
+              <input type="text" class="form-input" placeholder="Ex: Consulta veterinária"/>
+            </div>
+            <div class="form-group">
+              <label>Descrição</label>
+              <textarea class="form-textarea" placeholder="Descreva o que aconteceu..."></textarea>
+            </div>
+            <button class="btn-section btn-orange">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Adicionar Registro
+            </button>
+          </div>
+
+          <!-- Resumo do Mês -->
+          <div class="section-card">
+            <div class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#4a0080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <strong>Resumo do Mês</strong>
+            </div>
+            <div class="summary-items">
+              <div class="summary-item">
+                <div class="summary-icon summary-saude"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#e74c3c" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                <span class="summary-label">Saúde</span>
+                <span class="summary-count">3</span>
+              </div>
+              <div class="summary-item">
+                <div class="summary-icon summary-alim"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#f5a623" viewBox="0 0 256 256"><path d="M212,80a28,28,0,1,0,28,28A28,28,0,0,0,212,80Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,120ZM72,108a28,28,0,1,0-28,28A28,28,0,0,0,72,108ZM44,120a12,12,0,1,1,12-12A12,12,0,0,1,44,120ZM92,88A28,28,0,1,0,64,60,28,28,0,0,0,92,88Zm0-40A12,12,0,1,1,80,60,12,12,0,0,1,92,48Zm72,40a28,28,0,1,0-28-28A28,28,0,0,0,164,88Zm0-40a12,12,0,1,1-12,12A12,12,0,0,1,164,48Zm23.12,100.86a35.3,35.3,0,0,1-16.87-21.14,44,44,0,0,0-84.5,0A35.25,35.25,0,0,1,69,148.82,40,40,0,0,0,88,224a39.48,39.48,0,0,0,15.52-3.13,64.09,64.09,0,0,1,48.87,0,40,40,0,0,0,34.73-72ZM168,208a24,24,0,0,1-9.45-1.93,80.14,80.14,0,0,0-61.19,0,24,24,0,0,1-20.71-43.26,51.22,51.22,0,0,0,24.46-30.67,28,28,0,0,1,53.78,0,51.27,51.27,0,0,0,24.53,30.71A24,24,0,0,1,168,208Z"></path></svg></div>
+                <span class="summary-label">Alimentação</span>
+                <span class="summary-count">5</span>
+              </div>
+              <div class="summary-item">
+                <div class="summary-icon summary-ativ"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#27ae60" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <span class="summary-label">Atividade</span>
+                <span class="summary-count">8</span>
+              </div>
+              <div class="summary-item">
+                <div class="summary-icon summary-med"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#8e44ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10.5 20.5 3.5 13.5a5 5 0 0 1 7.07-7.07l7 7a5 5 0 0 1-7.07 7.07z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></div>
+                <span class="summary-label">Medicamento</span>
+                <span class="summary-count">2</span>
+              </div>
+              <div class="summary-item">
+                <div class="summary-icon summary-banho"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#2980b9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></div>
+                <span class="summary-label">Banho &amp; Tosa</span>
+                <span class="summary-count">1</span>
+              </div>
+            </div>
+            <div class="summary-total">
+              <span>Total de registros</span>
+              <strong>19</strong>
+            </div>
+          </div>
+
+        </div><!-- end diary-right -->
+
+      </div><!-- end diary-body -->
+
+      <!-- Action Buttons -->
+      <div class="user-actions">
+        <button class="btn btn-edit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Exportar Diário
+        </button>
+        <button class="btn btn-add">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Registro
+        </button>
+      </div>
+
+    </div><!-- end diary-card -->
+
+    <div class="back-link">
+      <span class="back-arrow">&#8249;</span>
+      <span>Voltar</span>
+    </div>
+
+  </main>
+
+</body>
+</html>

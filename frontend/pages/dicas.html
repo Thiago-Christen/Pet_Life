@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Dicas & Artigos | PetLife{% endblock %}
+
+{% block content %}
+<main class="tips-page">
+    <div class="container-fluid p-4">
+
+        <header class="topbar mx-auto">
+            <div class="topbar-left">
+                <div class="brand">
+                    <a href="/index">
+                        <img src="{{ request.url_for('static', path='img/logo_petLife.png') }}" alt="PetLife Logo" class="brand-logo">
+                    </a>
+                </div>
+            </div>
+
+            <nav class="topbar-nav">
+                <a href="/index" class="nav-item">
+                    <i class="fa-solid fa-paw"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/dicas" class="nav-item active">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>Dicas &amp; Artigos</span>
+                </a>
+            </nav>
+
+            <div class="topbar-right">
+                <a href="/profile" class="profile" aria-label="Perfil">
+                    <img src="{{ request.url_for('static', path='img/test_perfil.png') }}" alt="Perfil" class="profile-img">
+                </a>
+
+                <div class="notification">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-notification">1</span>
+                </div>
+            </div>
+        </header>
+
+        {% if flash %}
+        <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+            <h2>{{ flash.header }}</h2>
+            <p>{{ flash.texto }}</p>
+        </div>
+        {% endif %}
+
+        <section class="tips-hero mx-auto">
+            <div class="tips-back-row">
+                <a href="/index" class="tips-back-link">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Voltar</span>
+                </a>
+            </div>
+
+            <article class="tips-banner">
+                <div class="tips-banner__accent"></div>
+
+                <div class="tips-banner__content">
+                    <div class="tips-banner__icon">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+
+                    <div class="tips-banner__info">
+                        <h1>Dicas &amp; Artigos</h1>
+                        <p>Conteúdo especializado para cuidar melhor do seu pet</p>
+                    </div>
+
+                    <div class="tips-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Buscar artigos..." aria-label="Buscar artigos">
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="tips-grid mx-auto">
+            <div class="tips-left">
+                <div class="tips-filter-bar">
+                    <button class="filter-tag active" type="button">Todos</button>
+                    <button class="filter-tag" type="button">Saúde</button>
+                    <button class="filter-tag" type="button">Nutrição</button>
+                    <button class="filter-tag" type="button">Comportamento</button>
+                    <button class="filter-tag" type="button">Higiene</button>
+                    <button class="filter-tag" type="button">Raças</button>
+                    <button class="filter-tag" type="button">Adestramento</button>
+                </div>
+
+                <article class="article-card article-card--featured">
+                    <div class="article-media">
+                        <img src="{{ request.url_for('static', path='img/pets_landingpage.png') }}" alt="Artigo em destaque">
+                        <span class="article-chip chip-saude">Saúde</span>
+                        <span class="article-badge">Destaque</span>
+                        <button class="article-bookmark" type="button" aria-label="Salvar artigo">
+                            <i class="fa-regular fa-bookmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="article-content">
+                        <h2>Vacinação canina: tudo o que você precisa saber em 2026</h2>
+                        <p>Guia completo sobre o calendário de vacinação para cães, quais vacinas são obrigatórias, opcionais e como manter o cartão sempre atualizado.</p>
+
+                        <div class="article-meta">
+                            <span><i class="fa-regular fa-clock"></i> 8 min</span>
+                            <span><i class="fa-regular fa-eye"></i> 2.4k</span>
+                            <span>05/04/2026</span>
+                        </div>
+
+                        <a href="#" class="article-button">
+                            Ler artigo
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <div class="articles-grid">
+                    <article class="article-card">
+                        <div class="article-media">
+                            <img src="{{ request.url_for('static', path='img/dog_test.webp') }}" alt="Nutrição canina">
+                            <span class="article-chip chip-nutri">Nutrição</span>
+                            <button class="article-bookmark" type="button" aria-label="Salvar artigo">
+                                <i class="fa-regular fa-bookmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="article-content">
+                            <h2>A melhor dieta para beagles adultos</h2>
+                            <p>Descubra as quantidades ideais, horários e alimentos que seu beagle deve comer para viver com saúde e energia.</p>
+
+                            <div class="article-meta">
+                                <span><i class="fa-regular fa-clock"></i> 5 min</span>
+                                <span><i class="fa-regular fa-eye"></i> 1.1k</span>
+                                <span>02/04/2026</span>
+                            </div>
+
+                            <a href="#" class="article-button">
+                                Ler artigo
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="article-card">
+                        <div class="article-media">
+                            <img src="{{ request.url_for('static', path='img/cat_test.webp') }}" alt="Adestramento">
+                            <span class="article-chip chip-adest">Adestramento</span>
+                            <button class="article-bookmark" type="button" aria-label="Salvar artigo">
+                                <i class="fa-regular fa-bookmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="article-content">
+                            <h2>5 comandos essenciais para ensinar ao seu cão</h2>
+                            <p>Senta, fica, vem, deita e quieto. Aprenda técnicas de reforço positivo para ensinar esses comandos.</p>
+
+                            <div class="article-meta">
+                                <span><i class="fa-regular fa-clock"></i> 6 min</span>
+                                <span><i class="fa-regular fa-eye"></i> 890</span>
+                                <span>30/03/2026</span>
+                            </div>
+
+                            <a href="#" class="article-button">
+                                Ler artigo
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="article-card">
+                        <div class="article-media">
+                            <img src="{{ request.url_for('static', path='img/pets_landingpage.png') }}" alt="Higiene">
+                            <span class="article-chip chip-hig">Higiene</span>
+                            <button class="article-bookmark" type="button" aria-label="Salvar artigo">
+                                <i class="fa-regular fa-bookmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="article-content">
+                            <h2>Com que frequência dar banho no seu cachorro?</h2>
+                            <p>A frequência ideal varia por raça, tamanho e estilo de vida. Veja as recomendações mais seguras.</p>
+
+                            <div class="article-meta">
+                                <span><i class="fa-regular fa-clock"></i> 4 min</span>
+                                <span><i class="fa-regular fa-eye"></i> 760</span>
+                                <span>27/03/2026</span>
+                            </div>
+
+                            <a href="#" class="article-button">
+                                Ler artigo
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="article-card">
+                        <div class="article-media">
+                            <img src="{{ request.url_for('static', path='img/dog_test.webp') }}" alt="Comportamento">
+                            <span class="article-chip chip-comp">Comportamento</span>
+                            <button class="article-bookmark" type="button" aria-label="Salvar artigo">
+                                <i class="fa-regular fa-bookmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="article-content">
+                            <h2>Por que meu cachorro late tanto?</h2>
+                            <p>Entenda os principais motivos do latido excessivo e como corrigi-lo de forma humana e eficaz.</p>
+
+                            <div class="article-meta">
+                                <span><i class="fa-regular fa-clock"></i> 7 min</span>
+                                <span><i class="fa-regular fa-eye"></i> 1.5k</span>
+                                <span>24/03/2026</span>
+                            </div>
+
+                            <a href="#" class="article-button">
+                                Ler artigo
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <aside class="tips-right">
+                <section class="sidebar-card">
+                    <div class="sidebar-title">
+                        <i class="fa-solid fa-bookmark"></i>
+                        <strong>Artigos Salvos</strong>
+                    </div>
+
+                    <div class="saved-list">
+                        <div class="saved-item">
+                            <span class="saved-dot dot-saude"></span>
+                            <div>
+                                <p>Sinais de que seu pet está doente</p>
+                                <span class="saved-tag tag-saude">Saúde</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+
+                        <div class="saved-item">
+                            <span class="saved-dot dot-nutri"></span>
+                            <div>
+                                <p>Alimentos proibidos para cães</p>
+                                <span class="saved-tag tag-nutri">Nutrição</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+
+                        <div class="saved-item">
+                            <span class="saved-dot dot-adest"></span>
+                            <div>
+                                <p>Como socializar filhotes</p>
+                                <span class="saved-tag tag-adest">Adestramento</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sidebar-card">
+                    <div class="sidebar-title">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <strong>Mais Lidos</strong>
+                    </div>
+
+                    <div class="trending-list">
+                        <div class="trending-item">
+                            <span class="trending-num">01</span>
+                            <div>
+                                <p>Como calcular a idade do seu cachorro</p>
+                                <span><i class="fa-regular fa-eye"></i> 5.2k visualizações</span>
+                            </div>
+                        </div>
+
+                        <div class="trending-item">
+                            <span class="trending-num">02</span>
+                            <div>
+                                <p>Vacinação canina: guia completo 2026</p>
+                                <span><i class="fa-regular fa-eye"></i> 2.4k visualizações</span>
+                            </div>
+                        </div>
+
+                        <div class="trending-item">
+                            <span class="trending-num">03</span>
+                            <div>
+                                <p>Raças de cachorro mais populares no Brasil</p>
+                                <span><i class="fa-regular fa-eye"></i> 1.9k visualizações</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sidebar-card sidebar-card--newsletter">
+                    <div class="sidebar-title">
+                        <i class="fa-solid fa-heart"></i>
+                        <strong>Receba novidades</strong>
+                    </div>
+
+                    <p class="newsletter-text">Cadastre seu e-mail e receba dicas semanais para cuidar melhor do seu pet.</p>
+
+                    <input type="email" class="newsletter-input" placeholder="seu@email.com">
+                    <button type="button" class="newsletter-btn">Quero receber dicas!</button>
+                </section>
+            </aside>
+        </section>
+
+        <section class="tips-bottom-actions mx-auto">
+            <button type="button" class="bottom-btn bottom-btn--gold">
+                <i class="fa-solid fa-bookmark"></i>
+                Meus Salvos
+            </button>
+
+            <button type="button" class="bottom-btn bottom-btn--purple">
+                <i class="fa-solid fa-list"></i>
+                Ver Todos os Artigos
+            </button>
+        </section>
+
+    </div>
+</main>
+{% endblock %}

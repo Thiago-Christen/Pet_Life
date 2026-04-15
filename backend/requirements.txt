@@ -1,0 +1,10 @@
+#pip install -r backend/requirements.txt.
+
+fastapi
+uvicorn[standard]
+pymysql
+bcrypt
+mangum
+jinja2
+python-multipart
+

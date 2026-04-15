@@ -15,18 +15,6 @@
 
             <img class="logo" src="/static/img/logo_petLife.png" alt="">
 
-            <div class="msg-box 
-                {{ 'msg-erro' if 'Erro' in request.session.get('mensagem_header','') else 'msg-sucesso' }}">
-                
-                <h2>
-                    {{ request.session.get("mensagem_header") }}
-                </h2>
-
-                <p>
-                    {{ request.session.get("mensagem") }}
-                </p>
-            </div>
-
             <div class="acoes">
                 <a href="/login">
                     <button>Voltar</button>
