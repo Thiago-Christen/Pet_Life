@@ -3,6 +3,24 @@
 {% block title %}Perfil | PetLife{% endblock %}
 
 {% block content %}
+<div id="confirm-modal" class="modal hidden">
+        <div class="box">
+            <button class="close" id="confirm-close">✕</button>
+
+            <p>Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.</p>
+
+            <div class="actions">
+                <button id="confirm-yes" class="danger">🗑️ Excluir</button>
+                <button id="confirm-no" class="cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="error-modal" class="modal hidden">
+        <div class="box error">
+            <p id="error-text">Ocorreu um erro</p>
+            <button id="error-ok">OK</button>
+        </div>
+    </div>
 <main class="profile-page">
     <div class="container-lg py-4">
 
@@ -92,31 +110,37 @@
                                     <div class="col-12 col-md-6">
                                         <label for="nome" class="form-label profile-label">Nome</label>
                                         <input type="text" id="nome" name="nome" class="form-control profile-input" value="{{ user.nome }}" disabled required>
+                                        <small class="error" id="nameError"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="email" class="form-label profile-label">E-mail</label>
                                         <input type="email" id="email" name="email" class="form-control profile-input" value="{{ user.email }}" disabled required>
+                                        <small class="error" id="emailError"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="num_telefone" class="form-label profile-label">Telefone</label>
                                         <input type="text" id="num_telefone" name="num_telefone" class="form-control profile-input" value="{{ user.num_telefone }}" disabled required>
+                                        <small class="error" id="phoneError"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="data_nascimento" class="form-label profile-label">Data de Nascimento</label>
                                         <input type="date" id="data_nascimento" name="data_nascimento" class="form-control profile-input" value="{{ user.data_nascimento }}" disabled required>
+                                        <small class="error" id="birthdateError"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="cpf" class="form-label profile-label">CPF</label>
                                         <input type="text" id="cpf" name="cpf" class="form-control profile-input" value="{{ user.cpf }}" disabled required>
+                                        <small class="error" id="cpfCnpjError"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="senha_account" class="form-label profile-label">Nova Senha <span class="profile-label-note">(opcional)</span></label>
                                         <input type="password" id="senha_account" name="senha" class="form-control profile-input" placeholder="Digite uma nova senha" disabled>
+                                        <small class="error" id="passwordError"></small>
                                     </div>
                                 </div>
 
@@ -146,12 +170,12 @@
                                 </button>
                             </div>
 
-                            <form id="settings-form" action="/profile_update" method="post" class="d-flex flex-column flex-grow-1">
-                                <input type="hidden" name="nome" value="{{ user.nome }}">
-                                <input type="hidden" name="email" value="{{ user.email }}">
-                                <input type="hidden" name="num_telefone" value="{{ user.num_telefone }}">
-                                <input type="hidden" name="data_nascimento" value="{{ user.data_nascimento }}">
-                                <input type="hidden" name="cpf" value="{{ user.cpf }}">
+                            <form id="settings-form"  action="/profile_update" method="post" class="d-flex flex-column grow">
+                                <input type="hidden" id="name" name="nome" value="{{ user.nome }}">
+                                <input type="hidden" id="email" name="email" value="{{ user.email }}">
+                                <input type="hidden" id="phone" name="num_telefone" value="{{ user.num_telefone }}">
+                                <input type="hidden" id="birthdate" name="data_nascimento" value="{{ user.data_nascimento }}">
+                                <input type="hidden" id="cpfCnpj" name="cpf" value="{{ user.cpf }}">
 
                                 <div class="profile-settings-list">
                                     <div class="profile-setting-row">
@@ -165,21 +189,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="profile-setting-row align-items-start flex-column">
-                                        <div class="profile-setting-label mb-2">
-                                            <i class="fa-solid fa-unlock-keyhole"></i>
-                                            <span>Trocar Senha</span>
-                                        </div>
-
-                                        <input
-                                            type="password"
-                                            id="senha_settings"
-                                            name="senha"
-                                            class="form-control profile-input"
-                                            placeholder="Digite uma nova senha"
-                                            disabled
-                                        >
-                                    </div>
+                                    
                                 </div>
 
                                 <div class="d-flex justify-content-end mt-auto pt-3">
@@ -202,39 +212,4 @@
     </div>
 </main>
 
-<script>
-document.querySelectorAll(".js-edit-toggle").forEach((button) => {
-    button.addEventListener("click", () => {
-        const form = document.getElementById(button.dataset.target);
-        if (!form) return;
-
-        const fields = form.querySelectorAll("input:not([type='hidden'])");
-        const saveBtn = form.querySelector(".js-save-btn");
-
-        const isDisabled = [...fields].every(field => field.disabled);
-
-        fields.forEach(field => field.disabled = !isDisabled);
-
-        if (saveBtn) saveBtn.disabled = !isDisabled;
-
-        button.innerHTML = isDisabled
-            ? '<i class="fa-solid fa-ban"></i> Bloquear edição'
-            : '<i class="fa-solid fa-pen"></i> ' + (form.id === "account-form" ? "Editar dados" : "Editar config.");
-    });
-});
-
-document.getElementById("delete-account-btn")?.addEventListener("click", async () => {
-    const confirmed = confirm("Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.");
-    if (!confirmed) return;
-
-    const response = await fetch("/profile_delete", { method: "DELETE" });
-    const data = await response.json();
-
-    if (data.success) {
-        window.location.href = "/login";
-    } else {
-        alert(data.error || "Não foi possível excluir a conta.");
-    }
-});
-</script>
 {% endblock %}

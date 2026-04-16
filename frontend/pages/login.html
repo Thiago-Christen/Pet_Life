@@ -20,15 +20,16 @@
             <label for="email">Senha</label>
             <input type="password" id="senha" name="senha" placeholder="Senha" required>
 
-        <button type="submit">Entrar</button>
-        <a href="/register">Ainda não tem uma conta?</a>
+            <button type="submit">Entrar</button>
+            <a href="/register">Ainda não tem uma conta?</a>
 
-        {% if flash %}
-        <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
-            <h2>{{ flash.header }}</h2>
-            <p>{{ flash.texto }}</p>
-        </div>
-        {% endif %}
+            {% if flash %}
+            <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+                <h2>{{ flash.header }}</h2>
+                <p>{{ flash.texto }}</p>
+            </div>
+            {% endif %}
+        </form>
     <img class="imagem_pets" src="../static/img/login_cat_dog.png" alt="">
     </div>
 </body>
