@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetLife</title>
-    <link rel="icon" href="/static/img/icone.ico" type="image/png">
+    <link rel="icon" href="/static/img/logo_petLife_aba.png" type="image/png">
     <link rel="stylesheet" href="../static/css/login.css">
 </head>
 <body>
@@ -20,15 +20,15 @@
             <label for="email">Senha</label>
             <input type="password" id="senha" name="senha" placeholder="Senha" required>
 
-            <button type="submit">Entrar</button>
-            <a href="/register">Ainda não tem uma conta?</a>
+        <button type="submit">Entrar</button>
+        <a href="/register" style="margin-top: 1rem; display: flex; justify-content: center;">Ainda não tem uma conta?</a>
 
-            {% if flash %}
-            <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
-                <h2>{{ flash.header }}</h2>
-                <p>{{ flash.texto }}</p>
-            </div>
-            {% endif %}
+        {% if flash %}
+        <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
+            <h2>{{ flash.header }}</h2>
+            <p>{{ flash.texto }}</p>
+        </div>
+        {% endif %}
         </form>
     <img class="imagem_pets" src="../static/img/login_cat_dog.png" alt="">
     </div>

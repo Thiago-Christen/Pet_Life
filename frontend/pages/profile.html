@@ -28,7 +28,8 @@
             <div class="topbar-left">
                 <div class="brand">
                     <a href="/index">
-                        <img src="{{ request.url_for('static', path='img/logo_petLife.png') }}" alt="PetLife Logo" class="brand-logo">
+                        <img src="{{ request.url_for('static', path='img/logo_petLife.png') }}" alt="PetLife Logo"
+                            class="brand-logo">
                     </a>
                 </div>
             </div>
@@ -38,16 +39,12 @@
                     <i class="fa-solid fa-paw"></i>
                     <span>Dashboard</span>
                 </a>
-
-      <!--        <a href="/dicas" class="nav-item">
-                    <i class="fa-solid fa-lightbulb"></i>
-                    <span>Dicas &amp; Artigos</span>
-                </a>-->  
             </nav>
 
             <div class="topbar-right">
                 <a href="/profile" class="profile" aria-label="Perfil">
-                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil"
+                        class="profile-img">
                 </a>
 
                 <div class="notification">
@@ -58,20 +55,34 @@
         </header>
 
         {% if flash %}
-        <div class="msg-box {{ 'msg-erro' if flash.tipo == 'erro' else 'msg-sucesso' }}">
-            <h2>{{ flash.header }}</h2>
-            <p>{{ flash.texto }}</p>
+        <div class="popup-overlay show" id="flashPopup">
+            <div class="popup-card {% if flash.tipo == 'sucesso' %}success{% else %}error{% endif %}">
+                <button type="button" class="popup-close" id="closeFlashPopup" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <div class="popup-icon">
+                    {% if flash.tipo == 'sucesso' %}
+                    <i class="fa-solid fa-circle-check"></i>
+                    {% else %}
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    {% endif %}
+                </div>
+
+                <h2>{{ flash.header }}</h2>
+                <p>{{ flash.texto }}</p>
+            </div>
         </div>
         {% endif %}
 
         <section class="profile-hero mt-4">
-
             <div class="profile-banner card border-0 rounded-5 overflow-hidden shadow">
                 <div class="profile-banner-accent"></div>
 
                 <div class="card-body p-4 p-md-5 profile-banner-body">
                     <div class="profile-avatar-wrap">
-                        <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Foto do perfil" class="profile-avatar">
+                        <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Foto do perfil"
+                            class="profile-avatar">
                     </div>
 
                     <div class="profile-banner-info">
@@ -89,58 +100,71 @@
         </section>
 
         <section class="profile-grid mt-4">
-            <div class="row g-3">
+            <div class="row g-5">
                 <div class="col-12 col-lg-7">
                     <div class="card border-0 rounded-5 shadow-sm h-100 profile-card">
                         <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom profile-card-header">
+                            <div
+                                class="d-flex justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom profile-card-header">
                                 <h2 class="profile-section-title mb-0">
                                     <i class="fa-solid fa-user"></i>
                                     Dados da Conta
                                 </h2>
 
-                                <button type="button" class="btn btn-sm btn-outline-dark-subtle btn-mini-edit js-edit-toggle" data-target="account-form">
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-dark-subtle btn-mini-edit js-edit-toggle"
+                                    data-target="account-form">
                                     <i class="fa-solid fa-pen"></i>
                                     Editar dados
                                 </button>
                             </div>
 
-                            <form id="account-form" action="/profile_update" method="post" class="needs-edit">
+                            <form id="account-form" action="/profile_update" method="post" class="needs-edit"
+                                novalidate>
                                 <div class="row g-3">
                                     <div class="col-12 col-md-6">
                                         <label for="nome" class="form-label profile-label">Nome</label>
-                                        <input type="text" id="nome" name="nome" class="form-control profile-input" value="{{ user.nome }}" disabled required>
-                                        <small class="error" id="nameError"></small>
+                                        <input type="text" id="nome" name="nome" class="form-control profile-input"
+                                            value="{{ user.nome }}" disabled required minlength="3" maxlength="80"
+                                            autocomplete="name" oninput="this.value = this.value.replace(/[0-9]/g, '')">
+                                        <small class="error" id="nomeError"
+                                            style="color: red; font-weight: bold;"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="email" class="form-label profile-label">E-mail</label>
-                                        <input type="email" id="email" name="email" class="form-control profile-input" value="{{ user.email }}" disabled required>
-                                        <small class="error" id="emailError"></small>
+                                        <input type="email" id="email" name="email" class="form-control profile-input"
+                                            value="{{ user.email }}" disabled required autocomplete="email">
+                                        <small class="error" id="emailError"
+                                            style="color: red; font-weight: bold;"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="num_telefone" class="form-label profile-label">Telefone</label>
-                                        <input type="text" id="num_telefone" name="num_telefone" class="form-control profile-input" value="{{ user.num_telefone }}" disabled required>
-                                        <small class="error" id="phoneError"></small>
+                                        <input type="tel" id="num_telefone" name="num_telefone"
+                                            class="form-control profile-input" value="{{ user.num_telefone }}" disabled
+                                            required inputmode="numeric" maxlength="15" autocomplete="tel">
+                                        <small class="error" id="num_telefoneError"
+                                            style="color: red; font-weight: bold;"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
-                                        <label for="data_nascimento" class="form-label profile-label">Data de Nascimento</label>
-                                        <input type="date" id="data_nascimento" name="data_nascimento" class="form-control profile-input" value="{{ user.data_nascimento }}" disabled required>
-                                        <small class="error" id="birthdateError"></small>
+                                        <label for="data_nascimento" class="form-label profile-label">Data de
+                                            Nascimento</label>
+                                        <input type="date" id="data_nascimento" name="data_nascimento"
+                                            class="form-control profile-input" value="{{ user.data_nascimento }}"
+                                            disabled required autocomplete="bday">
+                                        <small class="error" id="data_nascimentoError"
+                                            style="color: red; font-weight: bold;"></small>
                                     </div>
 
                                     <div class="col-12 col-md-6">
                                         <label for="cpf" class="form-label profile-label">CPF</label>
-                                        <input type="text" id="cpf" name="cpf" class="form-control profile-input" value="{{ user.cpf }}" disabled required>
-                                        <small class="error" id="cpfCnpjError"></small>
-                                    </div>
-
-                                    <div class="col-12 col-md-6">
-                                        <label for="senha_account" class="form-label profile-label">Nova Senha <span class="profile-label-note">(opcional)</span></label>
-                                        <input type="password" id="senha_account" name="senha" class="form-control profile-input" placeholder="Digite uma nova senha" disabled>
-                                        <small class="error" id="passwordError"></small>
+                                        <input type="text" id="cpf" name="cpf" class="form-control profile-input"
+                                            value="{{ user.cpf }}" disabled required inputmode="numeric" maxlength="14"
+                                            autocomplete="off">
+                                        <small class="error" id="cpfError"
+                                            style="color: red; font-weight: bold;"></small>
                                     </div>
                                 </div>
 
@@ -158,24 +182,28 @@
                 <div class="col-12 col-lg-5">
                     <div class="card border-0 rounded-5 shadow-sm h-100 profile-card">
                         <div class="card-body p-4 d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom profile-card-header">
+                            <div
+                                class="d-flex justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom profile-card-header">
                                 <h2 class="profile-section-title mb-0">
                                     <i class="fa-solid fa-gear"></i>
                                     Configurações
                                 </h2>
 
-                                <button type="button" class="btn btn-sm btn-outline-dark-subtle btn-mini-edit js-edit-toggle" data-target="settings-form">
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-dark-subtle btn-mini-edit js-edit-toggle"
+                                    data-target="settings-form">
                                     <i class="fa-solid fa-pen"></i>
                                     Editar config.
                                 </button>
                             </div>
 
-                            <form id="settings-form"  action="/profile_update" method="post" class="d-flex flex-column grow">
-                                <input type="hidden" id="name" name="nome" value="{{ user.nome }}">
-                                <input type="hidden" id="email" name="email" value="{{ user.email }}">
-                                <input type="hidden" id="phone" name="num_telefone" value="{{ user.num_telefone }}">
-                                <input type="hidden" id="birthdate" name="data_nascimento" value="{{ user.data_nascimento }}">
-                                <input type="hidden" id="cpfCnpj" name="cpf" value="{{ user.cpf }}">
+                            <form id="settings-form" action="/profile_update" method="post"
+                                class="d-flex flex-column flex-grow-1" novalidate>
+                                <input type="hidden" name="nome" value="{{ user.nome }}">
+                                <input type="hidden" name="email" value="{{ user.email }}">
+                                <input type="hidden" name="num_telefone" value="{{ user.num_telefone }}">
+                                <input type="hidden" name="data_nascimento" value="{{ user.data_nascimento }}">
+                                <input type="hidden" name="cpf" value="{{ user.cpf }}">
 
                                 <div class="profile-settings-list">
                                     <div class="profile-setting-row">
@@ -185,11 +213,23 @@
                                         </div>
 
                                         <div class="form-check form-switch m-0">
-                                            <input class="form-check-input settings-switch" type="checkbox" name="notificacoes" checked disabled>
+                                            <input class="form-check-input settings-switch" type="checkbox"
+                                                name="notificacoes" checked disabled>
                                         </div>
                                     </div>
 
-                                    
+                                    <div class="profile-setting-row align-items-start flex-column">
+                                        <div class="profile-setting-label mb-2">
+                                            <i class="fa-solid fa-unlock-keyhole"></i>
+                                            <span>Trocar Senha</span>
+                                        </div>
+
+                                        <input type="password" id="senha_settings" name="senha"
+                                            class="form-control profile-input" placeholder="Digite uma nova senha"
+                                            disabled minlength="8" autocomplete="new-password">
+                                        <small class="error" id="senha_settingsError"
+                                            style="color: red; font-weight: bold;"></small>
+                                    </div>
                                 </div>
 
                                 <div class="d-flex justify-content-end mt-auto pt-3">
@@ -200,10 +240,35 @@
                                 </div>
                             </form>
 
-                            <button type="button" id="delete-account-btn" class="btn btn-danger mt-3 btn-delete-account">
+                            <button type="button" id="delete-account-btn"
+                                class="btn btn-danger mt-3 btn-delete-account">
                                 <i class="fa-solid fa-trash-can"></i>
                                 Excluir Conta
                             </button>
+
+                            <div class="popup-overlay" id="deleteConfirmPopup" aria-hidden="true">
+                                <div class="popup-card error" id="deleteConfirmPopupCard" role="dialog"
+                                    aria-modal="true" aria-labelledby="deleteConfirmTitle">
+                                    <button type="button" class="popup-close" id="closeDeleteConfirmPopup"
+                                        aria-label="Fechar">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+
+                                    <div class="popup-icon">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                    </div>
+
+                                    <h2 id="deleteConfirmTitle">Confirmar exclusão</h2>
+                                    <p>Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.</p>
+
+                                    <div class="d-flex justify-content-center gap-2 mt-4">
+                                        <button type="button" class="btn btn-light"
+                                            id="cancelDeleteBtn">Cancelar</button>
+                                        <button type="button" class="btn btn-danger"
+                                            id="confirmDeleteBtn">Excluir</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,4 +277,752 @@
     </div>
 </main>
 
+<div class="popup-overlay" id="appPopup" aria-hidden="true">
+    <div class="popup-card" id="appPopupCard" role="dialog" aria-modal="true" aria-labelledby="appPopupTitle">
+        <button type="button" class="popup-close" id="appPopupClose" aria-label="Fechar">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="popup-icon" id="appPopupIcon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <h2 id="appPopupTitle">Título</h2>
+        <p id="appPopupMessage">Mensagem</p>
+    </div>
+</div>
+
+<style>
+    .error {
+        display: block;
+        margin-top: 4px;
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        line-height: 1.2;
+    }
+
+    .popup-overlay {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 2000;
+    }
+
+    .popup-overlay.show {
+        display: flex;
+    }
+
+    .popup-card {
+        position: relative;
+        width: 100%;
+        max-width: 420px;
+        border-radius: 24px;
+        padding: 1.5rem 1.5rem 1.25rem;
+        background: #6f42c1;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        text-align: center;
+    }
+
+    .popup-card h2,
+    .popup-card p {
+        margin: 0;
+        color: #ffffff;
+    }
+
+    .popup-card.success h2,
+    .popup-card.success p,
+    .popup-card.success .popup-icon {
+        color: #28a745 !important;
+    }
+
+    .popup-card.error h2,
+    .popup-card.error p,
+    .popup-card.error .popup-icon {
+        color: #ff6b6b !important;
+    }
+
+    .popup-icon {
+        font-size: 2.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .popup-close {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        border: 0;
+        background: transparent;
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .popup-card .btn-light {
+        border-radius: 12px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+    }
+
+    .popup-card .btn-danger {
+        border-radius: 12px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+    }
+</style>
+
+<style>
+    :root {
+    --bg-primary: #6817b6;
+    --bg-primary-dark: #56108f;
+    --bg-card: #fffafc;
+    --bg-white: #ffffff;
+    --text-dark: #33154f;
+    --text-light: #ffffff;
+    --gold: #efb01a;
+    --gold-dark: #d99a00;
+    --purple-card: #5b178f;
+    --shadow: 0 14px 35px rgba(24, 4, 48, 0.18);
+    --shadow-soft: 0 8px 24px rgba(24, 4, 48, 0.12);
+    --radius-xl: 32px;
+    --radius-lg: 24px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(180deg, var(--bg-primary) 0%, #6516ad 100%);
+    color: var(--text-light);
+    min-height: 100vh;
+}
+
+/* Página principal */
+.dashboard-page {
+    min-height: 100vh;
+    padding: 26px 32px 32px;
+    background:
+        radial-gradient(circle at top center, rgba(255, 255, 255, 0.05), transparent 32%),
+        linear-gradient(180deg, #6817b6 0%, #5f14a2 100%);
+}
+
+.container-main {
+    width: min(100%, 1120px);
+    margin: 0 auto;
+}
+
+/* Topbar */
+.topbar {
+    width: min(100%, 900px);
+    margin: 0 auto;
+    background: var(--bg-white);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    position: relative;
+    z-index: 5;
+    flex-wrap: wrap;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.brand-logo {
+    width: 160px;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.brand-name span {
+    color: var(--gold);
+}
+
+.topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex: 1;
+}
+
+.nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #40245c;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: 0.25s ease;
+    position: relative;
+    padding: 8px 12px;
+    border-radius: 999px;
+}
+
+.nav-item:hover {
+    color: var(--gold-dark);
+}
+
+.nav-item.active {
+    color: var(--gold-dark);
+}
+
+.nav-item.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    width: 100%;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--gold);
+}
+
+.nav-item i {
+    margin-right: 6px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #3d1b58;
+}
+
+.profile-img {
+    width: 44px;
+    height: 44px;
+    padding: 7px;
+    border-radius: 50%;
+    object-fit: contain;
+    border: 2px solid #f0e8fa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.notification {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--purple-card);
+    background: rgba(91, 23, 143, 0.08);
+    cursor: pointer;
+}
+
+.notification i {
+    font-size: 1.3rem;
+}
+
+.badge-notification {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #b26a00;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 991px) {
+    .dashboard-page {
+        padding: 16px;
+    }
+
+    .topbar {
+        border-radius: 24px;
+        padding: 14px 16px;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+    }
+
+    .topbar-left,
+    .topbar-nav,
+    .topbar-right {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .topbar-nav {
+        gap: 10px;
+    }
+
+    .nav-item {
+        font-size: 0.95rem;
+        padding: 8px 10px;
+    }
+}
+
+@media (max-width: 640px) {
+    .topbar {
+        padding: 12px 12px;
+    }
+
+    .brand-logo {
+        width: 120px;
+    }
+
+    .topbar-nav {
+        gap: 8px;
+    }
+
+    .nav-item {
+        padding: 8px 10px;
+        font-size: 0;
+        width: 42px;
+        height: 42px;
+        justify-content: center;
+    }
+
+    .nav-item span {
+        display: none;
+    }
+
+    .nav-item i {
+        margin-right: 0;
+        font-size: 1.05rem;
+    }
+
+    .profile {
+        font-size: 0.92rem;
+    }
+
+    .profile-img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .notification {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (max-width: 420px) {
+    .topbar {
+        padding: 12px 10px;
+    }
+
+    .topbar-nav {
+        gap: 6px;
+    }
+
+    .nav-item {
+        width: 40px;
+        height: 40px;
+    }
+}
+</style>
+
+<style>
+    @media (max-width: 991px) {
+    .row.g-5 {
+        display: flex;
+        gap: 2rem;
+    }
+}
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const accountForm = document.getElementById("account-form");
+        const settingsForm = document.getElementById("settings-form");
+
+        const cpfInput = document.getElementById("cpf");
+        const phoneInput = document.getElementById("num_telefone");
+        const emailInput = document.getElementById("email");
+        const nameInput = document.getElementById("nome");
+        const birthdateInput = document.getElementById("data_nascimento");
+        const settingsPasswordInput = document.getElementById("senha_settings");
+        const accountPasswordInput = document.getElementById("senha_account");
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+        const popup = document.getElementById("appPopup");
+        const popupCard = document.getElementById("appPopupCard");
+        const popupClose = document.getElementById("appPopupClose");
+        const popupIcon = document.getElementById("appPopupIcon");
+        const popupTitle = document.getElementById("appPopupTitle");
+        const popupMessage = document.getElementById("appPopupMessage");
+
+        function onlyNumbers(value) {
+            return String(value || "").replace(/\D/g, "");
+        }
+
+        function formatCPF(value) {
+            const digits = onlyNumbers(value).slice(0, 11);
+            if (digits.length <= 3) return digits;
+            if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+            if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+            return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+        }
+
+        function formatPhone(value) {
+            const digits = onlyNumbers(value).slice(0, 11);
+            if (digits.length <= 2) return `(${digits}`;
+            if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+            if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+            return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+        }
+
+        function validateCPF(cpf) {
+            cpf = onlyNumbers(cpf);
+
+            if (cpf.length !== 11) return false;
+            if (/^(\d)\1+$/.test(cpf)) return false;
+
+            let sum = 0;
+            let remainder;
+
+            for (let i = 1; i <= 9; i++) {
+                sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+            }
+
+            remainder = (sum * 10) % 11;
+            if (remainder === 10) remainder = 0;
+            if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+
+            sum = 0;
+            for (let i = 1; i <= 10; i++) {
+                sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+            }
+
+            remainder = (sum * 10) % 11;
+            if (remainder === 10) remainder = 0;
+            if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+
+            return true;
+        }
+
+        function validatePhone(phone) {
+            const digits = onlyNumbers(phone);
+            return digits.length === 10 || digits.length === 11;
+        }
+
+        function validateBirthdate(birthdate) {
+            if (!birthdate) return { valid: false, message: "Informe a data de nascimento." };
+
+            const today = new Date();
+            const birth = new Date(birthdate);
+
+            today.setHours(0, 0, 0, 0);
+            birth.setHours(0, 0, 0, 0);
+
+            if (birth > today) {
+                return { valid: false, message: "A data de nascimento não pode ser no futuro." };
+            }
+
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            const dayDiff = today.getDate() - birth.getDate();
+
+            if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) age--;
+
+            if (age < 18) {
+                return { valid: false, message: "Você precisa ter 18 anos ou mais." };
+            }
+
+            return { valid: true, message: "" };
+        }
+
+        function validatePassword(password) {
+            return passwordRegex.test(password);
+        }
+
+        function showError(id, message) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = message;
+        }
+
+        function clearError(id) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = "";
+        }
+
+        function clearAllErrors() {
+            ["nomeError", "emailError", "num_telefoneError", "data_nascimentoError", "cpfError", "senha_accountError", "senha_settingsError", "deleteAccountError"]
+                .forEach(clearError);
+        }
+
+        function openPopup(type, title, message) {
+            if (!popup || !popupCard || !popupIcon || !popupTitle || !popupMessage) return;
+
+            popupCard.classList.remove("success", "error");
+            popupCard.classList.add(type);
+
+            popupIcon.innerHTML = type === "success"
+                ? '<i class="fa-solid fa-circle-check"></i>'
+                : '<i class="fa-solid fa-triangle-exclamation"></i>';
+
+            popupTitle.textContent = title;
+            popupMessage.textContent = message;
+
+            popup.classList.add("show");
+            popup.setAttribute("aria-hidden", "false");
+        }
+
+        function closePopup() {
+            if (!popup) return;
+            popup.classList.remove("show");
+            popup.setAttribute("aria-hidden", "true");
+        }
+
+        function setMaskedValueOnLoad() {
+            if (cpfInput) cpfInput.value = formatCPF(cpfInput.value);
+            if (phoneInput) phoneInput.value = formatPhone(phoneInput.value);
+        }
+
+        function bindMask(input, formatter) {
+            if (!input) return;
+            input.addEventListener("input", function () {
+                input.value = formatter(input.value);
+            });
+        }
+
+        function enableEditToggle() {
+            document.querySelectorAll(".js-edit-toggle").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const form = document.getElementById(button.dataset.target);
+                    if (!form) return;
+
+                    const fields = form.querySelectorAll("input:not([type='hidden'])");
+                    const saveBtn = form.querySelector(".js-save-btn");
+
+                    const isDisabled = [...fields].every(field => field.disabled);
+
+                    fields.forEach(field => field.disabled = !isDisabled);
+                    if (saveBtn) saveBtn.disabled = !isDisabled;
+
+                    button.innerHTML = isDisabled
+                        ? '<i class="fa-solid fa-ban"></i> Bloquear edição'
+                        : '<i class="fa-solid fa-pen"></i> ' + (form.id === "account-form" ? "Editar dados" : "Editar config.");
+                });
+            });
+        }
+
+        async function submitJsonForm(form) {
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: new FormData(form)
+            });
+
+            return await response.json();
+        }
+
+        accountForm?.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            clearAllErrors();
+
+            const name = nameInput ? nameInput.value.trim() : "";
+            const email = emailInput ? emailInput.value.trim() : "";
+            const phone = phoneInput ? phoneInput.value.trim() : "";
+            const birthdate = birthdateInput ? birthdateInput.value : "";
+            const cpf = cpfInput ? cpfInput.value.trim() : "";
+
+            let valid = true;
+
+            if (!name || name.length < 3) {
+                showError("nomeError", "Nome deve ter pelo menos 3 letras.");
+                valid = false;
+            }
+
+            if (!emailRegex.test(email)) {
+                showError("emailError", "E-mail inválido.");
+                valid = false;
+            }
+
+            if (!validatePhone(phone)) {
+                showError("num_telefoneError", "Telefone inválido.");
+                valid = false;
+            }
+
+            const birthCheck = validateBirthdate(birthdate);
+            if (!birthCheck.valid) {
+                showError("data_nascimentoError", birthCheck.message);
+                valid = false;
+            }
+
+            if (!cpfRegex.test(cpf) || !validateCPF(cpf)) {
+                showError("cpfError", "CPF inválido.");
+                valid = false;
+            }
+
+            const password = accountPasswordInput ? accountPasswordInput.value.trim() : "";
+            if (password && !validatePassword(password)) {
+                showError("senha_accountError", "Senha forte: 8 caracteres, com maiúscula, minúscula e número.");
+                valid = false;
+            }
+
+            if (!valid) return;
+
+            const rawCpf = cpfInput.value;
+            const rawPhone = phoneInput.value;
+            cpfInput.value = onlyNumbers(rawCpf);
+            phoneInput.value = onlyNumbers(rawPhone);
+
+            try {
+                const data = await submitJsonForm(accountForm);
+
+                if (data.success) {
+                    openPopup("success", "Atualização realizada com sucesso", data.message || "Seus dados foram atualizados com sucesso.");
+                } else {
+                    if (data.errors) {
+                        if (data.errors.nome) showError("nomeError", data.errors.nome);
+                        if (data.errors.email) showError("emailError", data.errors.email);
+                        if (data.errors.num_telefone) showError("num_telefoneError", data.errors.num_telefone);
+                        if (data.errors.data_nascimento) showError("data_nascimentoError", data.errors.data_nascimento);
+                        if (data.errors.cpf) showError("cpfError", data.errors.cpf);
+                    } else {
+                        openPopup("error", "Não foi possível atualizar", data.error || "Verifique os dados informados.");
+                    }
+                }
+            } catch {
+                openPopup("error", "Erro", "Não foi possível atualizar os dados.");
+            } finally {
+                cpfInput.value = formatCPF(cpfInput.value);
+                phoneInput.value = formatPhone(phoneInput.value);
+            }
+        });
+
+        settingsForm?.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            clearError("senha_settingsError");
+
+            const password = settingsPasswordInput ? settingsPasswordInput.value.trim() : "";
+            if (password && !validatePassword(password)) {
+                showError("senha_settingsError", "Senha forte: 8 caracteres, com maiúscula, minúscula e número.");
+                return;
+            }
+
+            try {
+                const data = await submitJsonForm(settingsForm);
+
+                if (data.success) {
+                    openPopup("success", "Senha alterada com sucesso", data.message || "Sua senha foi atualizada com sucesso.");
+                    settingsPasswordInput.value = "";
+                } else {
+                    openPopup("error", "Não foi possível alterar", data.error || "Verifique a senha informada.");
+                }
+            } catch {
+                openPopup("error", "Erro", "Não foi possível alterar a senha.");
+            }
+        });
+
+        popupClose?.addEventListener("click", closePopup);
+
+        popup?.addEventListener("click", (event) => {
+            if (event.target === popup) closePopup();
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closePopup();
+        });
+
+        setMaskedValueOnLoad();
+        bindMask(cpfInput, formatCPF);
+        bindMask(phoneInput, formatPhone);
+        enableEditToggle();
+    });
+</script>
+
+<script>
+    const deleteBtn = document.getElementById("delete-account-btn");
+    const deleteConfirmPopup = document.getElementById("deleteConfirmPopup");
+    const closeDeleteConfirmPopup = document.getElementById("closeDeleteConfirmPopup");
+    const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+    function openDeleteConfirmPopup() {
+        deleteConfirmPopup?.classList.add("show");
+        deleteConfirmPopup?.setAttribute("aria-hidden", "false");
+    }
+
+    function closeDeleteConfirmPopupFn() {
+        deleteConfirmPopup?.classList.remove("show");
+        deleteConfirmPopup?.setAttribute("aria-hidden", "true");
+    }
+
+    deleteBtn?.addEventListener("click", () => {
+        openDeleteConfirmPopup();
+    });
+
+    closeDeleteConfirmPopup?.addEventListener("click", closeDeleteConfirmPopupFn);
+    cancelDeleteBtn?.addEventListener("click", closeDeleteConfirmPopupFn);
+
+    deleteConfirmPopup?.addEventListener("click", (event) => {
+        if (event.target === deleteConfirmPopup) closeDeleteConfirmPopupFn();
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeDeleteConfirmPopupFn();
+    });
+
+    confirmDeleteBtn?.addEventListener("click", async () => {
+        const errorBox = document.getElementById("deleteAccountError");
+        if (errorBox) errorBox.textContent = "";
+
+        try {
+            const response = await fetch("/profile_delete", { method: "DELETE" });
+            const data = await response.json();
+
+            if (data.success) {
+                closeDeleteConfirmPopupFn();
+                openPopup("success", "Conta excluída com sucesso", data.message || "Sua conta foi excluída.");
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 1800);
+            } else {
+                closeDeleteConfirmPopupFn();
+                if (errorBox) errorBox.textContent = data.error || "Não foi possível excluir a conta.";
+                openPopup("error", "Erro ao excluir", data.error || "Não foi possível excluir a conta.");
+            }
+        } catch {
+            closeDeleteConfirmPopupFn();
+            openPopup("error", "Erro", "Falha ao excluir a conta.");
+        }
+    });
+</script>
 {% endblock %}
