@@ -1,0 +1,5 @@
+.\.venv\Scripts\Activate.ps1
+
+cd "caminho absoluto da pasta do projeto"
+.\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload
+

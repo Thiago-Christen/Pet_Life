@@ -132,10 +132,6 @@ button:hover {
     justify-content: center;
 }
 
-.imagem_pets{
-    margin-left: 8rem;
-}
-
 @media (max-width: 900px) {
     .container {
         flex-direction: column;

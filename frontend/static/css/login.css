@@ -33,7 +33,9 @@ p {
 }
 
 a {
-    margin-top: 15px;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
 }
 
 .container {

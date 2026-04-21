@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetLife</title>
-    <link rel="icon" href="/static/img/icone.ico" type="image/png">
-    <link rel="stylesheet" href="../static/css/register.css">
+    <link rel="icon" href="/static/img/logo_petLife_aba.png" type="image/png">
+    <link rel="stylesheet" href="/static/css/register.css">
 </head>
 <body>
     <div class="container">
         <form id="registerForm" action="/register_exe" method="post" novalidate>
-            <img class="logo" src="../static/img/logo_petLife.png" alt="Logo PetLife">
+            <img class="logo" src="/static/img/logo_petLife.png" alt="Logo PetLife">
 
             <h1>Crie sua conta</h1>
             <p>Cadastre-se para cuidar do seu Pet com todo carinho</p>
@@ -25,19 +24,27 @@
 
             <div class="fields">
                 <label for="name">Nome Completo</label>
-                <input type="text" id="name" name="nome" placeholder="Nome completo">
+                <input type="text" id="name" name="nome" placeholder="Nome completo" autocomplete="name">
                 <small class="error" id="nameError"></small>
             </div>
 
             <div class="fields">
                 <label for="email">E-mail</label>
-                <input type="email" id="email" name="email" placeholder="E-mail">
+                <input type="email" id="email" name="email" placeholder="E-mail" autocomplete="email">
                 <small class="error" id="emailError"></small>
             </div>
 
             <div class="fields">
                 <label for="phone">Celular</label>
-                <input type="tel" id="phone" name="phone" placeholder="(xx) xxxxx-xxxx" maxlength="15">
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="(xx) xxxxx-xxxx"
+                    maxlength="15"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                >
                 <small class="error" id="phoneError"></small>
             </div>
 
@@ -49,14 +56,22 @@
 
             <div class="fields">
                 <label for="cpfCnpj">CPF</label>
-                <input type="text" id="cpfCnpj" name="cpfCnpj" placeholder="CPF">
+                <input
+                    type="text"
+                    id="cpfCnpj"
+                    name="cpfCnpj"
+                    placeholder="CPF"
+                    maxlength="14"
+                    inputmode="numeric"
+                    autocomplete="off"
+                >
                 <small class="error" id="cpfCnpjError"></small>
             </div>
 
             <div class="fields">
                 <label for="password">Senha</label>
                 <div class="password-box">
-                    <input type="password" id="password" name="password" placeholder="Senha">
+                    <input type="password" id="password" name="password" placeholder="Senha" autocomplete="new-password">
                     <button type="button" id="togglePassword">Mostrar</button>
                 </div>
                 <small class="error" id="passwordError"></small>
@@ -64,7 +79,7 @@
 
             <div class="fields">
                 <label for="confirmPassword">Confirme sua senha</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha">
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" autocomplete="new-password">
                 <small class="error" id="confirmPasswordError"></small>
             </div>
 
@@ -73,10 +88,249 @@
             <a href="/login" class="link">Já tem uma conta?</a>
         </form>
 
-        <img class="imagem_pets" src="../static/img/login_cat_dog.png" alt="Pets">
+        <img class="imagem_pets" src="/static/img/login_cat_dog.png" alt="Pets" style="margin-left: 0">
     </div>
 
-    <script src="../static/js/register.js"></script>
-</body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("registerForm");
 
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+    const birthdateInput = document.getElementById("birthdate");
+    const cpfInput = document.getElementById("cpfCnpj");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const togglePasswordBtn = document.getElementById("togglePassword");
+
+    const nameError = document.getElementById("nameError");
+    const emailError = document.getElementById("emailError");
+    const phoneError = document.getElementById("phoneError");
+    const birthdateError = document.getElementById("birthdateError");
+    const cpfError = document.getElementById("cpfCnpjError");
+    const passwordError = document.getElementById("passwordError");
+    const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+    const nameRegex = /^.{5,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    function onlyNumbers(value) {
+        return String(value || "").replace(/\D/g, "");
+    }
+
+    function onlyLetters(value) {
+        return String(value || "").replace(/[^A-Za-zÀ-ÿ\s]/g, "");
+    }
+
+    function formatCPF(value) {
+        const digits = onlyNumbers(value).slice(0, 11);
+
+        if (digits.length === 0) return "";
+        if (digits.length <= 3) return digits;
+        if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+        if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+    }
+
+    function formatPhone(value) {
+        const digits = onlyNumbers(value).slice(0, 11);
+
+        if (digits.length === 0) return "";
+        if (digits.length <= 2) return `(${digits}`;
+        if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    }
+
+    function validateCPF(cpf) {
+        cpf = onlyNumbers(cpf);
+
+        if (cpf.length !== 11) return false;
+        if (/^(\d)\1+$/.test(cpf)) return false;
+
+        let sum = 0;
+        let remainder;
+
+        for (let i = 1; i <= 9; i++) {
+            sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        }
+
+        remainder = (sum * 10) % 11;
+        if (remainder === 10) remainder = 0;
+        if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+
+        sum = 0;
+        for (let i = 1; i <= 10; i++) {
+            sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        }
+
+        remainder = (sum * 10) % 11;
+        if (remainder === 10) remainder = 0;
+        if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+
+        return true;
+    }
+
+    function showError(element, message) {
+        element.textContent = message;
+    }
+
+    function clearError(element) {
+        element.textContent = "";
+    }
+
+    function isMoreThan18YearsOld(dateString) {
+        const birth = new Date(dateString);
+        const today = new Date();
+
+        birth.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        if (birth > today) return false;
+
+        const limit = new Date(today);
+        limit.setFullYear(limit.getFullYear() - 18);
+        limit.setDate(limit.getDate() - 1);
+
+        return birth <= limit;
+    }
+
+    function setMaxBirthdate() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const limit = new Date(today);
+        limit.setFullYear(limit.getFullYear() - 18);
+        limit.setDate(limit.getDate() - 1);
+
+        birthdateInput.max = limit.toISOString().split("T")[0];
+    }
+
+    function applyMask(input, formatter) {
+        if (!input) return;
+
+        input.addEventListener("input", function () {
+            input.value = formatter(input.value);
+        });
+
+        input.addEventListener("paste", function () {
+            setTimeout(() => {
+                input.value = formatter(input.value);
+            }, 0);
+        });
+    }
+
+    function blockNonNumeric(input) {
+        if (!input) return;
+
+        input.addEventListener("beforeinput", function (e) {
+            if (e.data && /\D/.test(e.data)) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    nameInput.addEventListener("input", function () {
+        nameInput.value = onlyLetters(nameInput.value);
+    });
+
+    applyMask(cpfInput, formatCPF);
+    applyMask(phoneInput, formatPhone);
+    blockNonNumeric(cpfInput);
+    blockNonNumeric(phoneInput);
+
+    if (nameInput) nameInput.value = onlyLetters(nameInput.value);
+    if (cpfInput) cpfInput.value = formatCPF(cpfInput.value);
+    if (phoneInput) phoneInput.value = formatPhone(phoneInput.value);
+
+    setMaxBirthdate();
+
+    togglePasswordBtn.addEventListener("click", function () {
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            togglePasswordBtn.textContent = "Ocultar";
+        } else {
+            passwordInput.type = "password";
+            togglePasswordBtn.textContent = "Mostrar";
+        }
+    });
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        let valid = true;
+
+        clearError(nameError);
+        clearError(emailError);
+        clearError(phoneError);
+        clearError(birthdateError);
+        clearError(cpfError);
+        clearError(passwordError);
+        clearError(confirmPasswordError);
+
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const birthdate = birthdateInput.value;
+        const cpf = cpfInput.value.trim();
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (!nameRegex.test(name)) {
+            showError(nameError, "Nome deve ter pelo menos 5 caracteres.");
+            valid = false;
+        }
+
+        if (!emailRegex.test(email)) {
+            showError(emailError, "E-mail inválido.");
+            valid = false;
+        }
+
+        if (onlyNumbers(phone).length !== 11) {
+            showError(phoneError, "Celular inválido. Use DDD + 9 dígitos.");
+            valid = false;
+        }
+
+        if (!birthdate) {
+            showError(birthdateError, "Data de nascimento obrigatória.");
+            valid = false;
+        } else {
+            const selectedDate = new Date(birthdate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate > today) {
+                showError(birthdateError, "A data não pode ser futura.");
+                valid = false;
+            } else if (!isMoreThan18YearsOld(birthdate)) {
+                showError(birthdateError, "Você precisa ter mais de 18 anos.");
+                valid = false;
+            }
+        }
+
+        if (!validateCPF(cpf)) {
+            showError(cpfError, "CPF inválido.");
+            valid = false;
+        }
+
+        if (!passwordRegex.test(password)) {
+            showError(passwordError, "Senha forte: 8 caracteres, maiúscula, minúscula e número.");
+            valid = false;
+        }
+
+        if (password !== confirmPassword) {
+            showError(confirmPasswordError, "As senhas não coincidem.");
+            valid = false;
+        }
+
+        if (valid) {
+            form.submit();
+        }
+    });
+});
+    </script>
+</body>
 </html>
