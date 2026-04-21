@@ -3,6 +3,24 @@
 {% block title %}Perfil | PetLife{% endblock %}
 
 {% block content %}
+<div id="confirm-modal" class="modal hidden">
+        <div class="box">
+            <button class="close" id="confirm-close">✕</button>
+
+            <p>Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.</p>
+
+            <div class="actions">
+                <button id="confirm-yes" class="danger">🗑️ Excluir</button>
+                <button id="confirm-no" class="cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="error-modal" class="modal hidden">
+        <div class="box error">
+            <p id="error-text">Ocorreu um erro</p>
+            <button id="error-ok">OK</button>
+        </div>
+    </div>
 <main class="profile-page">
     <div class="container-lg py-4">
 

@@ -50,9 +50,8 @@
 
         <section class="hero-section mx-auto">
             <div class="hero-text">
-                <h1>Boas Vindas ao <span>PetLife</span>, {{ user.nome }}!</h1>
-                <p>Acompanhe e cuide do seu Pet com carinho e atenção</p>
-            </div>
+                <h1>Boas Vindas ao <span>PetLife</span>, {{ user.nome.split(' ')[0] + ' ' + user.nome.split(' ')[1] }}!</h1>
+                <p>Acompanhe e cuide do seu Pet com carinho e atenção</p>            </div>
 
             <div class="hero-image">
                 <img src="{{ request.url_for('static', path='../static/img/pets_landingpage.png') }}" alt="Pets" style="top: 4.5rem; position: relative; z-index: 1;">
