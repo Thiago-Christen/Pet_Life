@@ -59,58 +59,62 @@
         </section>
 
         <section class="pets-panel mx-auto">
+            {% if pets %}
             <div class="row g-4 align-items-stretch">
-
+                {% for pet in pets %}
                 <div class="col-12 col-lg-6">
-                    <div class="pet-card pet-card-gold">
-                        <h2>Angel <i class="fa-solid fa-paw"></i></h2>
+                    <div class="pet-card {% if loop.index is odd %}pet-card-gold{% else %}pet-card-purple{% endif %}">
+                        <h2>{{ pet.nome }} <i class="fa-solid fa-paw"></i></h2>
 
                         <div class="pet-inner-card">
                             <div class="pet-photo">
-                                <img src="{{ request.url_for('static', path='../static/img/dog_test.webp') }}" alt="Angel">
+                                {% if pet.foto %}
+                                <img src="{{ request.url_for('static', path=pet.foto.replace('/static/', '')) }}" alt="{{ pet.nome }}">
+                                {% else %}
+                                <img src="{{ request.url_for('static', path='img/pet_default.png') }}" alt="{{ pet.nome }}">
+                                {% endif %}
                             </div>
 
                             <div class="pet-info">
-                                <p><i class="fa-solid fa-paw"></i> 3 Anos</p>
-                                <p><i class="fa-solid fa-dog"></i> Cachorro</p>
-                                <p><i class="fa-solid fa-weight-scale"></i> 30kg</p>
+                                <p><i class="fa-solid fa-calendar"></i> {{ pet.idade }} {% if pet.idade == 1 %}ano{% else %}anos{% endif %}</p>
+                                <p>
+                                    {% if pet.especie == 'cachorro' %}
+                                    <i class="fa-solid fa-dog"></i>
+                                    {% else %}
+                                    <i class="fa-solid fa-cat"></i>
+                                    {% endif %}
+                                    {{ pet.especie|capitalize }}
+                                </p>
+                                <p><i class="fa-solid fa-weight-scale"></i> {{ pet.peso|default('--') }} kg</p>
+                                <p><i class="fa-solid fa-${porte}"></i> {{ pet.porte|capitalize }}</p>
 
-                                <button class="btn-pet btn-gold">Acessar</button>
+                                <button class="btn-pet {% if loop.index is odd %}btn-gold{% else %}btn-purple{% endif %}">
+                                    Acessar
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-12 col-lg-6">
-                    <div class="pet-card pet-card-purple">
-                        <h2>Cloe <i class="fa-solid fa-paw"></i></h2>
-
-                        <div class="pet-inner-card">
-                            <div class="pet-photo">
-                                <img src="{{ request.url_for('static', path='../static/img/cat_test.webp') }}" alt="Cloe">
-                            </div>
-
-                            <div class="pet-info">
-                                <p><i class="fa-solid fa-paw"></i> 3 Anos</p>
-                                <p><i class="fa-solid fa-cat"></i> Gato</p>
-                                <p><i class="fa-solid fa-weight-scale"></i> 30kg</p>
-
-                                <button class="btn-pet btn-purple">Acessar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                {% endfor %}
             </div>
+            {% else %}
+            <!-- Nenhum pet cadastrado ainda -->
+            <div class="no-pets-message">
+                <i class="fa-solid fa-paw" style="font-size: 48px; color: #c8b5dc;"></i>
+                <h3>Você ainda não tem nenhum pet cadastrado</h3>
+                <p>Clique no botão abaixo para adicionar seu primeiro amigo!</p>
+            </div>
+            {% endif %}
 
             <div class="add-pet-wrap">
-                <button class="btn-add-pet">
-                    <i class="fa-solid fa-plus"></i>
-                    Adicionar Pet
-                </button>
+                <a href="/pet_register" style="text-decoration: none;">
+                    <button class="btn-add-pet" type="button">
+                        <i class="fa-solid fa-plus"></i>
+                        Adicionar Pet
+                    </button>
+                </a>
             </div>
         </section>
-
     </div>
 </main>
 
