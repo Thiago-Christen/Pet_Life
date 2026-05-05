@@ -1,7 +1,7 @@
 import pymysql
-
 import bcrypt
-
+import os
+import shutil
 from mangum import Mangum
 from fastapi import FastAPI, Request, Form, Depends, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -19,7 +19,7 @@ app.add_middleware(
     SessionMiddleware,
     secret_key="Pet_life",
     session_cookie="petlife_session",
-    max_age = 50000,  # (50 = 5 segundos)
+    max_age=50000,
     same_site="lax",
     https_only=False
 )
@@ -30,9 +30,11 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 # Configuração de templates Jinja2
 templates = Jinja2Templates(directory="frontend/pages")
 
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-        return RedirectResponse(url="/register", status_code=303)
+    return RedirectResponse(url="/register", status_code=303)
+
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
@@ -42,6 +44,7 @@ async def register_page(request: Request):
         "flash": flash
     })
 
+
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     flash = request.session.pop("flash", None)
@@ -49,6 +52,7 @@ async def login_page(request: Request):
         "request": request,
         "flash": flash
     })
+
 
 @app.post("/register_exe")
 async def register_exe(
@@ -82,7 +86,7 @@ async def register_exe(
         with db.cursor() as cursor:
             print("CONECTOU NO BANCO")
 
-            cursor.execute("SELECT * FROM usuario WHERE email =%s", (email,))
+            cursor.execute("SELECT * FROM usuario WHERE email = %s", (email,))
             if cursor.fetchone():
                 raise Exception("E-mail já cadastrado")
 
@@ -93,18 +97,18 @@ async def register_exe(
             senha_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode("utf-8")
 
             sql = """
-                    INSERT INTO usuario 
-                    (nome,senha ,email, num_telefone, data_nascimento, cpf)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """
+                INSERT INTO usuario 
+                (nome, senha, email, num_telefone, data_nascimento, cpf)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
 
             cursor.execute(sql, (
-                    nome,
-                    senha_hash,
-                    email,
-                    celular,
-                    birthdate,
-                    cpf
+                nome,
+                senha_hash,
+                email,
+                celular,
+                birthdate,
+                cpf
             ))
 
         db.commit()
@@ -115,9 +119,8 @@ async def register_exe(
             "texto": "Conta criada com sucesso!"
         }
 
-        
         return RedirectResponse(url="/login", status_code=303)
-    
+
     except Exception as e:
         request.session["flash"] = {
             "tipo": "erro",
@@ -126,9 +129,10 @@ async def register_exe(
         }
 
         return RedirectResponse(url="/register", status_code=303)
-    
+
     finally:
         db.close()
+
 
 @app.post("/login_exe")
 async def login_exe(
@@ -171,19 +175,48 @@ async def login_exe(
     finally:
         db.close()
 
+
 @app.get("/index", response_class=HTMLResponse)
-async def index_page(request: Request):
+async def index_page(request: Request, db=Depends(get_db)):
     user = request.session.get("user")
     if not user:
         return RedirectResponse(url="/login", status_code=303)
 
     flash = request.session.pop("flash", None)
-
+    
+    # Buscar os pets do usuário logado
+    pets = []
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            # Calcula a idade automaticamente
+            sql = """
+                SELECT 
+                    p.pet_id,
+                    p.nome,
+                    p.especie,
+                    p.genero,
+                    p.raca,
+                    p.data_nascimento,
+                    p.peso,
+                    p.porte,
+                    p.foto,
+                    TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) AS idade
+                FROM pet p
+                WHERE p.fk_usuario_id = %s
+                ORDER BY p.pet_id DESC
+            """
+            cursor.execute(sql, (user["id"],))
+            pets = cursor.fetchall()
+    except Exception as e:
+        print(f"Erro ao buscar pets: {e}")
+    
     return templates.TemplateResponse("index.html", {
         "request": request,
         "user": user,
-        "flash": flash
+        "flash": flash,
+        "pets": pets  # ← adicionar os pets
     })
+
 
 @app.get("/dicas", response_class=HTMLResponse)
 async def dicas_page(request: Request):
@@ -211,6 +244,7 @@ async def profile_page(request: Request):
         "user": user,
         "flash": flash
     })
+
 
 @app.post("/profile_update")
 async def profile_update(
@@ -276,6 +310,7 @@ async def profile_update(
     finally:
         db.close()
 
+
 @app.delete("/profile_delete")
 async def profile_delete(request: Request, db=Depends(get_db)):
     user = request.session.get("user")
@@ -293,6 +328,133 @@ async def profile_delete(request: Request, db=Depends(get_db)):
 
         return {"success": "Conta deletada com sucesso"}
 
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+    finally:
+        db.close()
+
+
+# ==================== ROTAS PARA CADASTRO DE PET ====================
+
+@app.get("/pet_register", response_class=HTMLResponse)
+async def pet_register_page(request: Request):
+    user = request.session.get("user")
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    flash = request.session.pop("flash", None)
+    return templates.TemplateResponse("pet_register.html", {
+        "request": request,
+        "user": user,
+        "flash": flash
+    })
+
+
+@app.post("/pet_register_exe")
+async def pet_register_exe(
+    request: Request,
+    nome: str = Form(...),
+    genero: str = Form(...),
+    especie: str = Form(...),
+    raca: str = Form(None),
+    data_nascimento: str = Form(...),
+    peso: float = Form(None),
+    porte: str = Form(...),
+    foto: UploadFile = File(None),
+    db=Depends(get_db)
+):
+    user = request.session.get("user")
+    if not user:
+        return {"error": "Usuário não logado"}
+    
+    try:
+        # Validar dados
+        if len(nome) < 2 or len(nome) > 100:
+            raise Exception("Nome deve ter entre 2 e 100 caracteres")
+        
+        if especie not in ["gato", "cachorro"]:
+            raise Exception("Espécie inválida")
+        
+        if genero not in ["macho", "femea"]:
+            raise Exception("Gênero inválido")
+        
+        if porte not in ["pequeno", "medio", "grande"]:
+            raise Exception("Porte inválido")
+        
+        # Validar raça (opcional)
+        if raca and len(raca) > 50:
+            raise Exception("Raça muito longa (máx 50 caracteres)")
+        
+        # Validar data de nascimento
+        try:
+            data_nasc = datetime.strptime(data_nascimento, "%Y-%m-%d").date()
+            if data_nasc > date.today():
+                raise Exception("Data de nascimento não pode ser futura")
+        except ValueError:
+            raise Exception("Data de nascimento inválida")
+        
+        # Validar peso
+        if peso is not None and peso < 0:
+            raise Exception("Peso não pode ser negativo")
+        
+        if peso is not None and peso > 200:
+            raise Exception("Peso não pode ser maior que 200kg")
+        
+        # Processar foto se fornecida
+        foto_path = None
+        if foto and foto.filename:
+            # Criar diretório se não existir
+            upload_dir = "frontend/static/uploads/pets"
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            # Validar tipo de arquivo
+            allowed_extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+            ext = os.path.splitext(foto.filename)[1].lower()
+            
+            if ext not in allowed_extensions:
+                raise Exception("Formato de imagem não suportado. Use JPG, PNG, GIF ou WEBP")
+            
+            # Validar tamanho (max 5MB)
+            foto.file.seek(0, os.SEEK_END)
+            file_size = foto.file.tell()
+            foto.file.seek(0)
+            
+            if file_size > 5 * 1024 * 1024:
+                raise Exception("A imagem deve ter no máximo 5MB")
+            
+            # Gerar nome único para o arquivo
+            filename = f"pet_{user['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
+            filepath = os.path.join(upload_dir, filename)
+            
+            # Salvar arquivo
+            with open(filepath, "wb") as buffer:
+                shutil.copyfileobj(foto.file, buffer)
+            
+            foto_path = f"/static/uploads/pets/{filename}"
+        
+        # Inserir no banco
+        with db.cursor() as cursor:
+            sql = """
+                INSERT INTO pet (nome, genero, especie, raca, data_nascimento, peso, porte, foto, fk_usuario_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(sql, (
+                nome, 
+                genero, 
+                especie, 
+                raca if raca else None, 
+                data_nascimento, 
+                peso, 
+                porte, 
+                foto_path, 
+                user["id"]
+            ))
+        
+        db.commit()
+        
+        return {"success": True, "message": f"{nome} foi cadastrado com sucesso!"}
+        
     except Exception as e:
         db.rollback()
         return {"error": str(e)}
