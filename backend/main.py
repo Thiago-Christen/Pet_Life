@@ -2,6 +2,7 @@ import pymysql
 import bcrypt
 import os
 import shutil
+import time
 from mangum import Mangum
 from fastapi import FastAPI, Request, Form, Depends, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -23,6 +24,22 @@ app.add_middleware(
     same_site="lax",
     https_only=False
 )
+
+SESSION_TIMEOUT = 600
+
+def verificar_sessao(request: Request):
+    user = request.session.get("user")
+    last_activity = request.session.get("last_activity")
+
+    if not user or not last_activity:
+        return None
+
+    if time.time() - last_activity > SESSION_TIMEOUT:
+        request.session.clear()
+        return None
+
+    request.session["last_activity"] = time.time()
+    return user
 
 # Configuração de arquivos estáticos
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
@@ -52,6 +69,11 @@ async def login_page(request: Request):
         "request": request,
         "flash": flash
     })
+
+@app.get("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse("/login", status_code=302)
 
 
 @app.post("/register_exe")
@@ -155,6 +177,7 @@ async def login_exe(
                 "data_nascimento": str(user["data_nascimento"]),
                 "cpf": user["cpf"]
             }
+            request.session["last_activity"] = time.time()  
             return RedirectResponse(url="/index", status_code=303)
 
         request.session["flash"] = {
@@ -178,7 +201,7 @@ async def login_exe(
 
 @app.get("/index", response_class=HTMLResponse)
 async def index_page(request: Request, db=Depends(get_db)):
-    user = request.session.get("user")
+    user = verificar_sessao(request)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
 
@@ -220,7 +243,7 @@ async def index_page(request: Request, db=Depends(get_db)):
 
 @app.get("/dicas", response_class=HTMLResponse)
 async def dicas_page(request: Request):
-    user = request.session.get("user")
+    user = verificar_sessao(request)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
 
@@ -234,7 +257,7 @@ async def dicas_page(request: Request):
 
 @app.get("/profile", response_class=HTMLResponse)
 async def profile_page(request: Request):
-    user = request.session.get("user")
+    user = verificar_sessao(request)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
 
@@ -257,7 +280,7 @@ async def profile_update(
     senha: str = Form(None),
     db=Depends(get_db)
 ):
-    user = request.session.get("user")
+    user = verificar_sessao(request)
     if not user:
         return {"error": "Usuário não logado"}
 
@@ -313,7 +336,7 @@ async def profile_update(
 
 @app.delete("/profile_delete")
 async def profile_delete(request: Request, db=Depends(get_db)):
-    user = request.session.get("user")
+    user = verificar_sessao(request)
     if not user:
         return {"error": "Usuário não logado"}
 
@@ -339,7 +362,7 @@ async def profile_delete(request: Request, db=Depends(get_db)):
 
 @app.get("/pet_register", response_class=HTMLResponse)
 async def pet_register_page(request: Request):
-    user = request.session.get("user")
+    user = verificar_sessao(request)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
     
@@ -364,7 +387,7 @@ async def pet_register_exe(
     foto: UploadFile = File(None),
     db=Depends(get_db)
 ):
-    user = request.session.get("user")
+    user = verificar_sessao(request)
     if not user:
         return {"error": "Usuário não logado"}
     
