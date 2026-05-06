@@ -61,7 +61,4 @@ SELECT
 FROM registrodiario r
 JOIN pet p ON r.fk_pet_id     = p.pet_id
 JOIN usuario u ON p.fk_usuario_id = u.id
-ORDER BY r.data;
-
-DROP DATABASE IF EXISTS petlife;
- 
+ORDER BY r.data; 

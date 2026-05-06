@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Pet | PetLife{% endblock %}
+
+{% block content %}
+<div class="pet-register-page">
+    <div class="container py-4">
+
+        <header class="topbar mx-auto">
+            <div class="topbar-left">
+                <div class="brand">
+                    <a href="/index">
+                        <img src="{{ request.url_for('static', path='img/logo_petLife.png') }}" alt="PetLife Logo" class="brand-logo">
+                    </a>
+                </div>
+            </div>
+
+            <nav class="topbar-nav">
+                <a href="/index" class="nav-item">
+                    <i class="fa-solid fa-paw"></i>
+                    <span>Dashboard</span>
+                </a>
+            </nav>
+
+            <div class="topbar-right">
+                <a href="/profile" class="profile" aria-label="Perfil">
+                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                </a>
+                <div class="notification">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-notification">1</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="pet-form-container mx-auto mt-4">
+            <div class="pet-form-header">
+                <a href="/index" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Voltar
+                </a>
+                <h1>
+                    <i class="fa-solid fa-paw"></i>
+                    Cadastrar Novo Pet
+                </h1>
+                <p>Adicione um novo amigo ao seu cuidado</p>
+            </div>
+
+            <form id="petForm" action="/pet_register_exe" method="post" enctype="multipart/form-data" novalidate>
+                <div class="row g-4">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group photo-group">
+                            <label for="foto">Foto do Pet</label>
+                            <div class="photo-upload-area" id="photoUploadArea">
+                                <input type="file" id="foto" name="foto" accept="image/*" style="display: none;">
+                                <div class="photo-preview" id="photoPreview">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <span>Clique para adicionar foto</span>
+                                </div>
+                            </div>
+                            <small class="error" id="fotoError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nome">Nome do Pet <span class="required">*</span></label>
+                            <input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Thor, Luna, Bob" required>
+                            <small class="error" id="nomeError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="especie">Espécie <span class="required">*</span></label>
+                            <div class="species-buttons">
+                                <button type="button" class="species-btn" data-especie="cachorro">
+                                    <i class="fa-solid fa-dog"></i> Cachorro
+                                </button>
+                                <button type="button" class="species-btn" data-especie="gato">
+                                    <i class="fa-solid fa-cat"></i> Gato
+                                </button>
+                            </div>
+                            <input type="hidden" id="especie" name="especie" required>
+                            <small class="error" id="especieError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genero">Gênero <span class="required">*</span></label>
+                            <div class="gender-buttons">
+                                <button type="button" class="gender-btn" data-genero="macho">
+                                    <i class="fa-solid fa-mars"></i> Macho
+                                </button>
+                                <button type="button" class="gender-btn" data-genero="femea">
+                                    <i class="fa-solid fa-venus"></i> Fêmea
+                                </button>
+                            </div>
+                            <input type="hidden" id="genero" name="genero" required>
+                            <small class="error" id="generoError"></small>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label for="raca">Raça</label>
+                            <input type="text" id="raca" name="raca" class="form-control" placeholder="Ex: Poodle, Siamês, SRD">
+                            <small class="error" id="racaError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data_nascimento">Data de Nascimento <span class="required">*</span></label>
+                            <input type="date" id="data_nascimento" name="data_nascimento" class="form-control" required>
+                            <small class="error" id="data_nascimentoError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="peso">Peso (kg)</label>
+                            <input type="number" id="peso" name="peso" class="form-control" step="0.01" placeholder="Ex: 5.5" min="0">
+                            <small class="error" id="pesoError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="porte">Porte <span class="required">*</span></label>
+                            <div class="porte-buttons">
+                                <button type="button" class="porte-btn" data-porte="pequeno">
+                                    <i class="fa-solid fa-mouse"></i> Pequeno
+                                </button>
+                                <button type="button" class="porte-btn" data-porte="medio">
+                                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Médio
+                                </button>
+                                <button type="button" class="porte-btn" data-porte="grande">
+                                    <i class="fa-solid fa-arrow-up"></i> Grande
+                                </button>
+                            </div>
+                            <input type="hidden" id="porte" name="porte" required>
+                            <small class="error" id="porteError"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="window.location.href='/index'">
+                        <i class="fa-solid fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-floppy-disk"></i> Cadastrar Pet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="popup-overlay" id="petPopup" aria-hidden="true">
+    <div class="popup-card" id="petPopupCard">
+        <button type="button" class="popup-close" id="closePetPopup" aria-label="Fechar">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="popup-icon" id="petPopupIcon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2 id="petPopupTitle">Título</h2>
+        <p id="petPopupMessage">Mensagem</p>
+    </div>
+</div>
+{% endblock %}

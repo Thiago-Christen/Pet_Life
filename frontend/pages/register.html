@@ -79,7 +79,10 @@
 
             <div class="fields">
                 <label for="confirmPassword">Confirme sua senha</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" autocomplete="new-password">
+                <div class="password-box">
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" autocomplete="new-password">
+                    <button type="button" id="toggleConfirmPassword">Mostrar</button>
+                </div>
                 <small class="error" id="confirmPasswordError"></small>
             </div>
 
@@ -103,6 +106,8 @@
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
     const togglePasswordBtn = document.getElementById("togglePassword");
+    const toggleConfirmPasswordBtn = document.getElementById("toggleConfirmPassword");
+
 
     const nameError = document.getElementById("nameError");
     const emailError = document.getElementById("emailError");
@@ -254,6 +259,16 @@
         } else {
             passwordInput.type = "password";
             togglePasswordBtn.textContent = "Mostrar";
+        }
+    });
+
+    toggleConfirmPasswordBtn.addEventListener("click", function () {
+        if (confirmPasswordInput.type === "password") {
+            confirmPasswordInput.type = "text";
+            toggleConfirmPasswordBtn.textContent = "Ocultar";
+        } else {
+            confirmPasswordInput.type = "password";
+            toggleConfirmPasswordBtn.textContent = "Mostrar";
         }
     });
 
