@@ -1,17 +1,20 @@
-import pymysql
-import bcrypt
 import os
 import shutil
 import time
-from mangum import Mangum
+import uuid
+from datetime import date, datetime
+from pathlib import Path
+
+import bcrypt
+import pymysql
 from fastapi import FastAPI, Request, Form, Depends, UploadFile, File
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from mangum import Mangum
 from starlette.middleware.sessions import SessionMiddleware
-from datetime import date, datetime
-from backend.db import get_db
 
+from backend.db import get_db
 
 app = FastAPI()
 
@@ -27,6 +30,7 @@ app.add_middleware(
 
 SESSION_TIMEOUT = 600
 
+
 def verificar_sessao(request: Request):
     user = request.session.get("user")
     last_activity = request.session.get("last_activity")
@@ -40,6 +44,7 @@ def verificar_sessao(request: Request):
 
     request.session["last_activity"] = time.time()
     return user
+
 
 # Configuração de arquivos estáticos
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
@@ -56,19 +61,26 @@ async def index(request: Request):
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
     flash = request.session.pop("flash", None)
-    return templates.TemplateResponse("register.html", {
-        "request": request,
+    return templates.TemplateResponse(
+    request=request,
+    name="register.html",
+    context={
         "flash": flash
-    })
+    }
+)
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     flash = request.session.pop("flash", None)
-    return templates.TemplateResponse("login.html", {
-        "request": request,
+    return templates.TemplateResponse(
+    request=request,
+    name="login.html",
+    context={
         "flash": flash
-    })
+    }
+)
+
 
 @app.get("/logout")
 def logout(request: Request):
@@ -175,9 +187,10 @@ async def login_exe(
                 "email": user["email"],
                 "num_telefone": user["num_telefone"],
                 "data_nascimento": str(user["data_nascimento"]),
-                "cpf": user["cpf"]
+                "cpf": user["cpf"],
+                "foto_perfil": user.get("foto_perfil")
             }
-            request.session["last_activity"] = time.time()  
+            request.session["last_activity"] = time.time()
             return RedirectResponse(url="/index", status_code=303)
 
         request.session["flash"] = {
@@ -206,12 +219,10 @@ async def index_page(request: Request, db=Depends(get_db)):
         return RedirectResponse(url="/login", status_code=303)
 
     flash = request.session.pop("flash", None)
-    
-    # Buscar os pets do usuário logado
+
     pets = []
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
-            # Calcula a idade automaticamente
             sql = """
                 SELECT 
                     p.pet_id,
@@ -232,13 +243,16 @@ async def index_page(request: Request, db=Depends(get_db)):
             pets = cursor.fetchall()
     except Exception as e:
         print(f"Erro ao buscar pets: {e}")
-    
-    return templates.TemplateResponse("index.html", {
-        "request": request,
+
+    return templates.TemplateResponse(
+    request=request,
+    name="index.html",
+    context={
         "user": user,
         "flash": flash,
-        "pets": pets  # ← adicionar os pets
-    })
+        "pets": pets
+    }
+)
 
 
 @app.get("/dicas", response_class=HTMLResponse)
@@ -248,25 +262,54 @@ async def dicas_page(request: Request):
         return RedirectResponse(url="/login", status_code=303)
 
     flash = request.session.pop("flash", None)
-    return templates.TemplateResponse("dicas.html", {
-        "request": request,
-        "user": user,
-        "flash": flash
-    })
+    return templates.TemplateResponse(
+            request=request,
+            name="dicas.html",
+            context={
+                "user": user,
+                "flash": flash
+            }
+    )
 
 
 @app.get("/profile", response_class=HTMLResponse)
-async def profile_page(request: Request):
-    user = verificar_sessao(request)
-    if not user:
+async def profile_page(request: Request, db=Depends(get_db)):
+    session_user = verificar_sessao(request)
+    if not session_user:
         return RedirectResponse(url="/login", status_code=303)
 
     flash = request.session.pop("flash", None)
-    return templates.TemplateResponse("profile.html", {
-        "request": request,
-        "user": user,
-        "flash": flash
-    })
+
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+                SELECT id, nome, email, num_telefone, data_nascimento, cpf, foto_perfil
+                FROM usuario
+                WHERE id = %s
+            """, (session_user["id"],))
+            user = cursor.fetchone()
+
+        if not user:
+            request.session.clear()
+            return RedirectResponse(url="/login", status_code=303)
+
+        if user.get("data_nascimento"):
+            if hasattr(user["data_nascimento"], "isoformat"):
+                user["data_nascimento"] = user["data_nascimento"].isoformat()
+            else:
+                user["data_nascimento"] = str(user["data_nascimento"])
+
+        return templates.TemplateResponse(
+            request=request,
+            name="profile.html",
+            context={
+                "user": user,
+                "flash": flash
+            }
+        )
+
+    finally:
+        db.close()
 
 
 @app.post("/profile_update")
@@ -278,58 +321,127 @@ async def profile_update(
     data_nascimento: str = Form(...),
     cpf: str = Form(...),
     senha: str = Form(None),
+    foto_perfil: UploadFile = File(None),
     db=Depends(get_db)
 ):
     user = verificar_sessao(request)
     if not user:
-        return {"error": "Usuário não logado"}
+        return JSONResponse(status_code=401, content={"success": False, "error": "Usuário não logado"})
+
+    upload_dir = Path("frontend/static/uploads/perfil")
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    allowed_extensions = {".jpg", ".jpeg", ".png", ".webp"}
+    foto_path = None
 
     try:
-        with db.cursor() as cursor:
-            # Verificar se email já existe para outro usuário
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("SELECT id, foto_perfil FROM usuario WHERE id = %s", (user["id"],))
+            current_user = cursor.fetchone()
+
+            if not current_user:
+                return JSONResponse(status_code=404, content={"success": False, "error": "Usuário não encontrado"})
+
             cursor.execute("SELECT id FROM usuario WHERE email = %s AND id != %s", (email, user["id"]))
             if cursor.fetchone():
-                raise Exception("E-mail já cadastrado por outro usuário")
+                return JSONResponse(status_code=400, content={"success": False, "error": "E-mail já cadastrado por outro usuário"})
 
-            # Verificar CPF
             cursor.execute("SELECT id FROM usuario WHERE cpf = %s AND id != %s", (cpf, user["id"]))
             if cursor.fetchone():
-                raise Exception("CPF já cadastrado por outro usuário")
+                return JSONResponse(status_code=400, content={"success": False, "error": "CPF já cadastrado por outro usuário"})
 
-            # Atualizar dados
+            if foto_perfil and foto_perfil.filename:
+                ext = Path(foto_perfil.filename).suffix.lower()
+                if ext not in allowed_extensions:
+                    return JSONResponse(
+                        status_code=400,
+                        content={"success": False, "error": "Formato de imagem inválido. Use JPG, PNG ou WEBP."}
+                    )
+
+                file_name = f"user_{user['id']}_{uuid.uuid4().hex}{ext}"
+                file_path = upload_dir / file_name
+
+                with file_path.open("wb") as buffer:
+                    shutil.copyfileobj(foto_perfil.file, buffer)
+
+                foto_path = f"uploads/perfil/{file_name}"
+
+                old_foto = current_user.get("foto_perfil")
+                if old_foto:
+                    old_path = Path("frontend/static") / old_foto
+                    if old_path.exists():
+                        try:
+                            old_path.unlink()
+                        except Exception:
+                            pass
+
             if senha:
                 senha_hash = bcrypt.hashpw(senha.encode(), bcrypt.gensalt()).decode("utf-8")
-                sql = """
-                    UPDATE usuario 
-                    SET nome = %s, email = %s, num_telefone = %s, data_nascimento = %s, cpf = %s, senha = %s
-                    WHERE id = %s
-                """
-                cursor.execute(sql, (nome, email, num_telefone, data_nascimento, cpf, senha_hash, user["id"]))
+
+                if foto_path:
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s,
+                            senha = %s,
+                            foto_perfil = %s
+                        WHERE id = %s
+                    """, (nome, email, num_telefone, data_nascimento, cpf, senha_hash, foto_path, user["id"]))
+                else:
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s,
+                            senha = %s
+                        WHERE id = %s
+                    """, (nome, email, num_telefone, data_nascimento, cpf, senha_hash, user["id"]))
             else:
-                sql = """
-                    UPDATE usuario 
-                    SET nome = %s, email = %s, num_telefone = %s, data_nascimento = %s, cpf = %s
-                    WHERE id = %s
-                """
-                cursor.execute(sql, (nome, email, num_telefone, data_nascimento, cpf, user["id"]))
+                if foto_path:
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s,
+                            foto_perfil = %s
+                        WHERE id = %s
+                    """, (nome, email, num_telefone, data_nascimento, cpf, foto_path, user["id"]))
+                else:
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s
+                        WHERE id = %s
+                    """, (nome, email, num_telefone, data_nascimento, cpf, user["id"]))
 
         db.commit()
 
-        # Atualizar sessão
         request.session["user"] = {
             "id": user["id"],
             "nome": nome,
             "email": email,
             "num_telefone": num_telefone,
             "data_nascimento": data_nascimento,
-            "cpf": cpf
+            "cpf": cpf,
+            "foto_perfil": foto_path if foto_path else user.get("foto_perfil")
         }
 
-        return {"success": "Perfil atualizado com sucesso"}
+        return {"success": True, "message": "Perfil atualizado com sucesso"}
 
     except Exception as e:
         db.rollback()
-        return {"error": str(e)}
+        return JSONResponse(status_code=400, content={"success": False, "error": str(e)})
+
     finally:
         db.close()
 
@@ -338,22 +450,31 @@ async def profile_update(
 async def profile_delete(request: Request, db=Depends(get_db)):
     user = verificar_sessao(request)
     if not user:
-        return {"error": "Usuário não logado"}
+        return JSONResponse(status_code=401, content={"success": False, "error": "Usuário não logado"})
 
     try:
-        with db.cursor() as cursor:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("SELECT foto_perfil FROM usuario WHERE id = %s", (user["id"],))
+            row = cursor.fetchone()
+
+            if row and row.get("foto_perfil"):
+                photo_path = Path("frontend/static") / row["foto_perfil"]
+                if photo_path.exists():
+                    try:
+                        photo_path.unlink()
+                    except Exception:
+                        pass
+
             cursor.execute("DELETE FROM usuario WHERE id = %s", (user["id"],))
 
         db.commit()
-
-        # Limpar sessão
         request.session.clear()
-
-        return {"success": "Conta deletada com sucesso"}
+        return {"success": True, "message": "Conta deletada com sucesso"}
 
     except Exception as e:
         db.rollback()
-        return {"error": str(e)}
+        return {"success": False, "error": str(e)}
+
     finally:
         db.close()
 
@@ -365,14 +486,16 @@ async def pet_register_page(request: Request):
     user = verificar_sessao(request)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
-    
+
     flash = request.session.pop("flash", None)
-    return templates.TemplateResponse("pet_register.html", {
-        "request": request,
+    return templates.TemplateResponse(
+    request=request,
+    name="pet_register.html",
+    context={
         "user": user,
         "flash": flash
-    })
-
+    }
+)
 
 @app.post("/pet_register_exe")
 async def pet_register_exe(
@@ -390,96 +513,88 @@ async def pet_register_exe(
     user = verificar_sessao(request)
     if not user:
         return {"error": "Usuário não logado"}
-    
+
     try:
-        # Validar dados
         if len(nome) < 2 or len(nome) > 100:
             raise Exception("Nome deve ter entre 2 e 100 caracteres")
-        
+
         if especie not in ["gato", "cachorro"]:
             raise Exception("Espécie inválida")
-        
+
         if genero not in ["macho", "femea"]:
             raise Exception("Gênero inválido")
-        
+
         if porte not in ["pequeno", "medio", "grande"]:
             raise Exception("Porte inválido")
-        
-        # Validar raça (opcional)
+
         if raca and len(raca) > 50:
             raise Exception("Raça muito longa (máx 50 caracteres)")
-        
-        # Validar data de nascimento
+
         try:
             data_nasc = datetime.strptime(data_nascimento, "%Y-%m-%d").date()
             if data_nasc > date.today():
                 raise Exception("Data de nascimento não pode ser futura")
         except ValueError:
             raise Exception("Data de nascimento inválida")
-        
-        # Validar peso
+
         if peso is not None and peso < 0:
             raise Exception("Peso não pode ser negativo")
-        
+
         if peso is not None and peso > 200:
             raise Exception("Peso não pode ser maior que 200kg")
-        
-        # Processar foto se fornecida
+
         foto_path = None
         if foto and foto.filename:
-            # Criar diretório se não existir
             upload_dir = "frontend/static/uploads/pets"
             os.makedirs(upload_dir, exist_ok=True)
-            
-            # Validar tipo de arquivo
+
             allowed_extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
             ext = os.path.splitext(foto.filename)[1].lower()
-            
+
             if ext not in allowed_extensions:
                 raise Exception("Formato de imagem não suportado. Use JPG, PNG, GIF ou WEBP")
-            
-            # Validar tamanho (max 5MB)
+
             foto.file.seek(0, os.SEEK_END)
             file_size = foto.file.tell()
             foto.file.seek(0)
-            
+
             if file_size > 5 * 1024 * 1024:
                 raise Exception("A imagem deve ter no máximo 5MB")
-            
-            # Gerar nome único para o arquivo
+
             filename = f"pet_{user['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
             filepath = os.path.join(upload_dir, filename)
-            
-            # Salvar arquivo
+
             with open(filepath, "wb") as buffer:
                 shutil.copyfileobj(foto.file, buffer)
-            
+
             foto_path = f"/static/uploads/pets/{filename}"
-        
-        # Inserir no banco
+
         with db.cursor() as cursor:
             sql = """
                 INSERT INTO pet (nome, genero, especie, raca, data_nascimento, peso, porte, foto, fk_usuario_id)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(sql, (
-                nome, 
-                genero, 
-                especie, 
-                raca if raca else None, 
-                data_nascimento, 
-                peso, 
-                porte, 
-                foto_path, 
+                nome,
+                genero,
+                especie,
+                raca if raca else None,
+                data_nascimento,
+                peso,
+                porte,
+                foto_path,
                 user["id"]
             ))
-        
+
         db.commit()
-        
+
         return {"success": True, "message": f"{nome} foi cadastrado com sucesso!"}
-        
+
     except Exception as e:
         db.rollback()
         return {"error": str(e)}
     finally:
         db.close()
+
+
+handler = Mangum(app)

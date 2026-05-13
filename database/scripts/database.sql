@@ -9,6 +9,7 @@ CREATE TABLE usuario (
     num_telefone VARCHAR(15) DEFAULT NULL,
     data_nascimento DATE NOT NULL,
     cpf CHAR(11) NOT NULL UNIQUE,
+    foto_perfil VARCHAR(255)  DEFAULT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

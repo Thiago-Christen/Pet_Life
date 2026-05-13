@@ -24,7 +24,15 @@
 
             <div class="topbar-right">
                 <a href="/profile" class="profile" aria-label="Perfil">
-                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                     {% if user.foto_perfil %}
+                        <img src="{{ request.url_for('static', path=user.foto_perfil) }}" 
+                            alt="Perfil" 
+                            class="profile-img">
+                    {% else %}
+                        <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" 
+                            alt="Perfil" 
+                            class="profile-img">
+                    {% endif %}
                 </a>
                 <div class="notification">
                     <i class="fa-solid fa-bell"></i>
