@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Diário de {{ pet.nome }} | PetLife{% endblock %}
+
+{% block content %}
+<div class="diary-page">
+    <div class="container py-4">
+
+        <!-- Topbar -->
+        <header class="topbar mx-auto">
+            <div class="topbar-left">
+                <div class="brand">
+                    <a href="/index">
+                        <img src="{{ request.url_for('static', path='img/logo_petLife.png') }}" alt="PetLife Logo" class="brand-logo">
+                    </a>
+                </div>
+            </div>
+
+            <nav class="topbar-nav">
+                <a href="/index" class="nav-item">
+                    <i class="fa-solid fa-paw"></i>
+                    <span>Dashboard</span>
+                </a>
+            </nav>
+
+            <div class="topbar-right">
+                <a href="/profile" class="profile" aria-label="Perfil">
+                    {% if user.foto %}
+                    <img src="{{ user.foto }}" alt="Perfil" class="profile-img">
+                    {% else %}
+                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                    {% endif %}
+                </a>
+                <div class="notification">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-notification">1</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Cabeçalho do Pet -->
+        <div class="pet-header mx-auto mt-4">
+            <div class="pet-header-content">
+                <div class="pet-avatar">
+                    {% if pet.foto %}
+                    <img src="{{ pet.foto }}" alt="{{ pet.nome }}">
+                    {% else %}
+                    <img src="{{ request.url_for('static', path='img/pet_default.png') }}" alt="{{ pet.nome }}">
+                    {% endif %}
+                </div>
+                <div class="pet-info-header">
+                    <h1>{{ pet.nome }}</h1>
+                    <div class="pet-badges">
+                        <span class="badge especie-badge">
+                            {% if pet.especie == 'cachorro' %}
+                            <i class="fa-solid fa-dog"></i>
+                            {% else %}
+                            <i class="fa-solid fa-cat"></i>
+                            {% endif %}
+                            {{ pet.especie|capitalize }}
+                        </span>
+                        <span class="badge genero-badge">
+                            {% if pet.genero == 'macho' %}
+                            <i class="fa-solid fa-mars"></i>
+                            {% else %}
+                            <i class="fa-solid fa-venus"></i>
+                            {% endif %}
+                            {{ pet.genero|capitalize }}
+                        </span>
+                        <span class="badge idade-badge">
+                            <i class="fa-solid fa-cake-candles"></i>
+                            {{ idade }} anos
+                        </span>
+                        <span class="badge porte-badge">
+                            <i class="fa-solid fa-ruler"></i>
+                            {{ pet.porte|capitalize }}
+                        </span>
+                    </div>
+                </div>
+                <a href="/index" class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Voltar
+                </a>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="diary-content mx-auto">
+            <div class="row g-4">
+                <!-- Sidebar - Estatísticas -->
+                <div class="col-12 col-lg-3">
+                    <div class="stats-card">
+                        <h3><i class="fa-solid fa-chart-simple"></i> Estatísticas</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">Total de Registros</span>
+                            <span class="stat-value">{{ registros|length }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Passeios</span>
+                            <span class="stat-value">{{ stats.passeio|default(0) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Alimentações</span>
+                            <span class="stat-value">{{ stats.alimentacao|default(0) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Brincadeiras</span>
+                            <span class="stat-value">{{ stats.brincadeira|default(0) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Vacinas</span>
+                            <span class="stat-value">{{ stats.vacina|default(0) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Consultas</span>
+                            <span class="stat-value">{{ stats.consulta|default(0) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Registros -->
+                <div class="col-12 col-lg-9">
+                    <!-- Botão Adicionar Registro -->
+                    <div class="add-record-btn-wrap">
+                        <button class="btn-add-record" id="openRecordModal">
+                            <i class="fa-solid fa-plus"></i>
+                            Adicionar Registro
+                        </button>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="filters-bar">
+                        <div class="filter-group">
+                            <label>Filtrar por tipo:</label>
+                            <select id="filterType" class="filter-select">
+                                <option value="todos">Todos</option>
+                                <option value="passeio">🚶 Passeio</option>
+                                <option value="alimentacao">🍖 Alimentação</option>
+                                <option value="brincadeira">🎾 Brincadeira</option>
+                                <option value="vacina">💉 Vacina</option>
+                                <option value="consulta">🏥 Consulta</option>
+                                <option value="medicamento">💊 Medicamento</option>
+                                <option value="observacao">📝 Observação</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Registros -->
+                    <div class="records-list" id="recordsList">
+                        {% if registros %}
+                            {% for registro in registros %}
+                            <div class="record-card" data-tipo="{{ registro.tipo }}">
+                                <div class="record-icon {{ registro.tipo }}">
+                                    {% if registro.tipo == 'passeio' %}
+                                    <i class="fa-solid fa-person-walking"></i>
+                                    {% elif registro.tipo == 'alimentacao' %}
+                                    <i class="fa-solid fa-bowl-food"></i>
+                                    {% elif registro.tipo == 'brincadeira' %}
+                                    <i class="fa-solid fa-baseball"></i>
+                                    {% elif registro.tipo == 'vacina' %}
+                                    <i class="fa-solid fa-syringe"></i>
+                                    {% elif registro.tipo == 'consulta' %}
+                                    <i class="fa-solid fa-stethoscope"></i>
+                                    {% elif registro.tipo == 'medicamento' %}
+                                    <i class="fa-solid fa-capsules"></i>
+                                    {% else %}
+                                    <i class="fa-solid fa-pen"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="record-content">
+                                    <div class="record-header">
+                                        <h4>{{ registro.tipo|capitalize }}</h4>
+                                        <span class="record-date">{{ registro.data }}</span>
+                                    </div>
+                                    {% if registro.observacoes %}
+                                    <p class="record-obs">{{ registro.observacoes }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="record-actions">
+                                    <button class="btn-delete-record" data-id="{{ registro.registro_id }}">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-records">
+                                <i class="fa-solid fa-book-open"></i>
+                                <h3>Nenhum registro ainda</h3>
+                                <p>Clique em "Adicionar Registro" para começar a acompanhar seu pet!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar Registro -->
+<div class="modal-overlay" id="recordModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fa-solid fa-plus"></i> Novo Registro</h2>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <form id="recordForm">
+            <input type="hidden" id="pet_id" name="pet_id" value="{{ pet.pet_id }}">
+            
+            <div class="form-group">
+                <label for="tipo">Tipo de Registro <span class="required">*</span></label>
+                <select id="tipo" name="tipo" class="form-control" required>
+                    <option value="">Selecione...</option>
+                    <option value="passeio">🚶 Passeio</option>
+                    <option value="alimentacao">🍖 Alimentação</option>
+                    <option value="brincadeira">🎾 Brincadeira</option>
+                    <option value="vacina">💉 Vacina</option>
+                    <option value="consulta">🏥 Consulta</option>
+                    <option value="medicamento">💊 Medicamento</option>
+                    <option value="observacao">📝 Observação</option>
+                </select>
+                <small class="error" id="tipoError"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="data">Data <span class="required">*</span></label>
+                <input type="date" id="data" name="data" class="form-control" required>
+                <small class="error" id="dataError"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="observacoes">Observações</label>
+                <textarea id="observacoes" name="observacoes" class="form-control" rows="4" placeholder="Detalhes sobre o registro..."></textarea>
+                <small class="error" id="observacoesError"></small>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel-modal" id="cancelModal">Cancelar</button>
+                <button type="submit" class="btn-save-record">Salvar Registro</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Popup de Sucesso/Erro -->
+<div class="popup-overlay" id="diaryPopup" aria-hidden="true">
+    <div class="popup-card" id="diaryPopupCard">
+        <button type="button" class="popup-close" id="closeDiaryPopup">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="popup-icon" id="diaryPopupIcon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2 id="diaryPopupTitle">Título</h2>
+        <p id="diaryPopupMessage">Mensagem</p>
+    </div>
+</div>
+
+{% endblock %}
