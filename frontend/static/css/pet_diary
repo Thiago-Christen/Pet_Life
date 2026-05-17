@@ -1,0 +1,626 @@
+@import "./global.css";
+
+/* Página do Diário */
+.diary-page {
+    min-height: 100vh;
+    padding: 26px 32px 32px;
+    background: radial-gradient(circle at top center, rgba(255, 255, 255, 0.05), transparent 32%),
+                linear-gradient(180deg, #6817b6 0%, #5f14a2 100%);
+}
+
+/* Cabeçalho do Pet */
+.pet-header {
+    max-width: 1100px;
+    background: #fffafc;
+    border-radius: 999px;
+    padding: 10px 20px;
+    box-shadow: 0 14px 35px rgba(24, 4, 48, 0.18);
+}
+
+.pet-header-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+}
+
+.pet-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #efb01a;
+    background: #f0edf8;
+    flex-shrink: 0;
+}
+
+.pet-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pet-info-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.pet-info-header h1 {
+    color: #4b1d76;
+    font-size: 1.1rem;
+    font-weight: 900;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.pet-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+
+.especie-badge {
+    background: #6817b6;
+    color: #fff;
+}
+
+.genero-badge {
+    background: #efb01a;
+    color: #4b1d76;
+}
+
+.idade-badge {
+    background: #e8e2f2;
+    color: #4b1d76;
+}
+
+.porte-badge {
+    background: #c8b5dc;
+    color: #4b1d76;
+}
+
+.btn-back {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #f0edf8;
+    color: #6817b6;
+    padding: 7px 14px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-back:hover {
+    background: #e8e2f2;
+    transform: translateY(-50%) translateX(-4px);
+}
+
+/* Conteúdo principal - FIX: garante alinhamento do grid */
+.diary-content {
+    max-width: 1100px;
+    margin-top: 24px; /* FIX: espaço entre o header do pet e o conteúdo */
+}
+
+/* FIX: garante que o row do Bootstrap alinha sidebar e lista lado a lado */
+.diary-content .row {
+    align-items: flex-start;
+}
+
+/* Cards de Estatísticas */
+.stats-card {
+    background: #fffafc;
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(24, 4, 48, 0.12);
+    position: sticky;   /* FIX: sidebar fica fixa enquanto rola a lista */
+    top: 16px;
+}
+
+.stats-card h3 {
+    color: #4b1d76;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0edf8;
+}
+
+.stats-card h3 i {
+    color: #efb01a;
+    margin-right: 8px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0edf8;
+}
+
+.stat-label {
+    color: #7a6b8a;
+    font-weight: 600;
+}
+
+.stat-value {
+    color: #6817b6;
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+/* Botão Adicionar Registro */
+.add-record-btn-wrap {
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+.btn-add-record {
+    background: linear-gradient(135deg, #efb01a 0%, #d99a00 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-add-record:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 176, 26, 0.4);
+}
+
+/* Filtros */
+.filters-bar {
+    background: #fffafc;
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; /* FIX: alinha label e select verticalmente */
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-group label {
+    color: #4b1d76;
+    font-weight: 700;
+    margin-bottom: 0; /* FIX: remove margin padrão do Bootstrap no label */
+}
+
+.filter-select {
+    padding: 8px 16px;
+    border: 2px solid rgba(91, 23, 143, 0.2);
+    border-radius: 50px;
+    background: #fff;
+    color: #4b1d76;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Lista de Registros */
+.records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.record-card {
+    background: #fffafc;
+    border-radius: 20px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.record-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.record-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0; /* FIX: ícone não encolhe */
+}
+
+.record-icon.passeio { background: #3498db; color: #fff; }
+.record-icon.alimentacao { background: #e67e22; color: #fff; }
+.record-icon.brincadeira { background: #2ecc71; color: #fff; }
+.record-icon.vacina { background: #e74c3c; color: #fff; }
+.record-icon.consulta { background: #9b59b6; color: #fff; }
+.record-icon.medicamento { background: #1abc9c; color: #fff; }
+.record-icon.observacao { background: #95a5a6; color: #fff; }
+
+.record-content {
+    flex: 1;
+    min-width: 0; /* FIX: evita overflow de texto em flex */
+}
+
+.record-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    gap: 4px; /* FIX: espaço entre título e data no wrap */
+}
+
+.record-header h4 {
+    color: #4b1d76;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.record-date {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.record-obs {
+    color: #7a6b8a;
+    font-size: 0.9rem;
+    margin: 0;
+    overflow: hidden;          /* FIX: evita overflow de texto longo */
+    text-overflow: ellipsis;
+}
+
+.record-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0; /* FIX: botão de deletar não encolhe */
+}
+
+.btn-delete-record {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-delete-record:hover {
+    background: #fee;
+    transform: scale(1.1);
+}
+
+/* Mensagem vazia */
+.empty-records {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fffafc;
+    border-radius: 24px;
+}
+
+.empty-records i {
+    font-size: 64px;
+    color: #c8b5dc;
+    margin-bottom: 16px;
+    display: block; /* FIX: garante display correto do ícone */
+}
+
+.empty-records h3 {
+    color: #4b1d76;
+    margin-bottom: 8px;
+}
+
+.empty-records p {
+    color: #7a6b8a;
+    margin: 0;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none !important;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-overlay.active {
+    display: flex !important;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 28px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0edf8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    color: #4b1d76;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0; /* FIX: remove margin padrão do h2 no Bootstrap */
+}
+
+.modal-header h2 i {
+    color: #efb01a;
+    margin-right: 8px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1; /* FIX: alinha melhor o × */
+    padding: 0;
+}
+
+.modal-close:hover {
+    color: #e74c3c;
+}
+
+.modal-content .form-group {
+    padding: 0 24px;
+    margin-bottom: 20px;
+}
+
+/* FIX: primeiro form-group precisa de espaço no topo */
+.modal-content .form-group:first-of-type {
+    margin-top: 20px;
+}
+
+.modal-content .form-group label {
+    color: #4b1d76;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.modal-content .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid rgba(91, 23, 143, 0.15);
+    border-radius: 14px;
+    font-size: 0.95rem;
+    box-sizing: border-box; /* FIX: evita overflow do input */
+}
+
+.modal-content .form-control:focus {
+    outline: none;
+    border-color: #efb01a;
+    box-shadow: none; /* FIX: remove glow padrão do Bootstrap */
+}
+
+.modal-actions {
+    padding: 20px 24px;
+    border-top: 1px solid #f0edf8;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.btn-cancel-modal {
+    background: #f0edf8;
+    color: #6817b6;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancel-modal:hover {
+    background: #e2d9f3;
+}
+
+.btn-save-record {
+    background: linear-gradient(135deg, #efb01a 0%, #d99a00 100%);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-save-record:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 176, 26, 0.4);
+}
+
+.required {
+    color: #e74c3c;
+}
+
+.error {
+    color: #e74c3c;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Popup */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+.popup-overlay.show {
+    display: flex;
+}
+
+.popup-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 32px 40px;
+    text-align: center;
+    max-width: 360px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.popup-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #999;
+    cursor: pointer;
+}
+
+.popup-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.popup-card.success .popup-icon { color: #2ecc71; }
+.popup-card.error .popup-icon { color: #e74c3c; }
+
+#diaryPopupTitle {
+    color: #4b1d76;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+#diaryPopupMessage {
+    color: #7a6b8a;
+    margin: 0;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 768px) {
+    .diary-page {
+        padding: 16px;
+    }
+
+    .pet-header {
+        padding: 20px;
+    }
+
+    .pet-header-content {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
+    .pet-info-header {
+        width: 100%;
+    }
+
+    .btn-back {
+        position: static;
+        transform: none;
+        margin-top: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-back:hover {
+        transform: translateX(-4px);
+    }
+
+    .pet-badges {
+        justify-content: center;
+    }
+
+    .record-card {
+        flex-wrap: wrap;
+    }
+
+    .record-header {
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+    }
+
+    .filter-group {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .add-record-btn-wrap {
+        text-align: center;
+    }
+}
