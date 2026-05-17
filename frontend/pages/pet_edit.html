@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Editar {{ pet.nome }} | PetLife{% endblock %}
+
+{% block content %}
+<div class="pet-register-page">
+    <div class="container py-4">
+
+        <header class="topbar mx-auto">
+            <div class="topbar-left">
+                <div class="brand">
+                    <a href="/index">
+                        <img src="{{ request.url_for('static', path='img/logo_petLife.png') }}" alt="PetLife Logo" class="brand-logo">
+                    </a>
+                </div>
+            </div>
+
+            <nav class="topbar-nav">
+                <a href="/index" class="nav-item">
+                    <i class="fa-solid fa-paw"></i>
+                    <span>Dashboard</span>
+                </a>
+            </nav>
+
+            <div class="topbar-right">
+                <a href="/profile" class="profile" aria-label="Perfil">
+                    {% if user.foto %}
+                    <img src="{{ user.foto }}" alt="Perfil" class="profile-img">
+                    {% else %}
+                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                    {% endif %}
+                </a>
+                <div class="notification">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-notification">1</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="pet-form-container mx-auto mt-4">
+            <div class="pet-form-header">
+                <a href="/index" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Voltar
+                </a>
+                <h1>
+                    <i class="fa-solid fa-pen"></i>
+                    Editar {{ pet.nome }}
+                </h1>
+                <p>Atualize as informações do seu pet</p>
+            </div>
+
+            <form id="petForm" action="/pet_edit_exe/{{ pet.pet_id }}" method="post" enctype="multipart/form-data" novalidate>
+                <div class="row g-4">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group photo-group">
+                            <label for="foto">Foto do Pet</label>
+                            <div class="photo-upload-area" id="photoUploadArea">
+                                <input type="file" id="foto" name="foto" accept="image/*" style="display: none;">
+                                <div class="photo-preview" id="photoPreview" style="background-image: url('{{ pet.foto or '' }}'); {% if pet.foto %}background-size: cover; background-position: center;{% endif %}">
+                                    {% if not pet.foto %}
+                                    <i class="fa-solid fa-camera"></i>
+                                    <span>Clique para alterar foto</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <small class="error" id="fotoError"></small>
+                            {% if pet.foto %}
+                            <small class="hint">Foto atual. Clique para trocar.</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nome">Nome do Pet <span class="required">*</span></label>
+                            <input type="text" id="nome" name="nome" class="form-control" value="{{ pet.nome }}" required>
+                            <small class="error" id="nomeError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="especie">Espécie <span class="required">*</span></label>
+                            <div class="species-buttons">
+                                <button type="button" class="species-btn {% if pet.especie == 'cachorro' %}active{% endif %}" data-especie="cachorro">
+                                    <i class="fa-solid fa-dog"></i> Cachorro
+                                </button>
+                                <button type="button" class="species-btn {% if pet.especie == 'gato' %}active{% endif %}" data-especie="gato">
+                                    <i class="fa-solid fa-cat"></i> Gato
+                                </button>
+                            </div>
+                            <input type="hidden" id="especie" name="especie" value="{{ pet.especie }}" required>
+                            <small class="error" id="especieError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genero">Gênero <span class="required">*</span></label>
+                            <div class="gender-buttons">
+                                <button type="button" class="gender-btn {% if pet.genero == 'macho' %}active{% endif %}" data-genero="macho">
+                                    <i class="fa-solid fa-mars"></i> Macho
+                                </button>
+                                <button type="button" class="gender-btn {% if pet.genero == 'femea' %}active{% endif %}" data-genero="femea">
+                                    <i class="fa-solid fa-venus"></i> Fêmea
+                                </button>
+                            </div>
+                            <input type="hidden" id="genero" name="genero" value="{{ pet.genero }}" required>
+                            <small class="error" id="generoError"></small>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label for="raca">Raça</label>
+                            <input type="text" id="raca" name="raca" class="form-control" value="{{ pet.raca or '' }}">
+                            <small class="error" id="racaError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data_nascimento">Data de Nascimento <span class="required">*</span></label>
+                            <input type="date" id="data_nascimento" name="data_nascimento" class="form-control" value="{{ pet.data_nascimento }}" required>
+                            <small class="error" id="data_nascimentoError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="peso">Peso (kg)</label>
+                            <input type="number" id="peso" name="peso" class="form-control" step="0.01" value="{{ pet.peso or '' }}">
+                            <small class="error" id="pesoError"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="porte">Porte <span class="required">*</span></label>
+                            <div class="porte-buttons">
+                                <button type="button" class="porte-btn {% if pet.porte == 'pequeno' %}active{% endif %}" data-porte="pequeno">
+                                    <i class="fa-solid fa-mouse"></i> Pequeno
+                                </button>
+                                <button type="button" class="porte-btn {% if pet.porte == 'medio' %}active{% endif %}" data-porte="medio">
+                                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Médio
+                                </button>
+                                <button type="button" class="porte-btn {% if pet.porte == 'grande' %}active{% endif %}" data-porte="grande">
+                                    <i class="fa-solid fa-arrow-up"></i> Grande
+                                </button>
+                            </div>
+                            <input type="hidden" id="porte" name="porte" value="{{ pet.porte }}" required>
+                            <small class="error" id="porteError"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="window.location.href='/index'">
+                        <i class="fa-solid fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="popup-overlay" id="petPopup" aria-hidden="true">
+    <div class="popup-card" id="petPopupCard">
+        <button type="button" class="popup-close" id="closePetPopup">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="popup-icon" id="petPopupIcon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2 id="petPopupTitle">Título</h2>
+        <p id="petPopupMessage">Mensagem</p>
+    </div>
+</div>
+
+<style>
+@import url('/static/css/pet_register.css');
+.pet-register-page .back-link {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #6817b6;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Botões de espécie
+    document.querySelectorAll(".species-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".species-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("especie").value = btn.dataset.especie;
+        });
+    });
+    
+    // Botões de gênero
+    document.querySelectorAll(".gender-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".gender-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("genero").value = btn.dataset.genero;
+        });
+    });
+    
+    // Botões de porte
+    document.querySelectorAll(".porte-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".porte-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("porte").value = btn.dataset.porte;
+        });
+    });
+    
+    // Upload de foto
+    const fotoInput = document.getElementById("foto");
+    const photoPreview = document.getElementById("photoPreview");
+    const photoUploadArea = document.getElementById("photoUploadArea");
+    
+    photoUploadArea?.addEventListener("click", () => fotoInput?.click());
+    
+    fotoInput?.addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                photoPreview.style.backgroundImage = `url(${ev.target.result})`;
+                photoPreview.style.backgroundSize = "cover";
+                photoPreview.style.backgroundPosition = "center";
+                photoPreview.innerHTML = '';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+{% endblock %}
