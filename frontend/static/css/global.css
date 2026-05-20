@@ -149,7 +149,7 @@ body {
     height: 44px;
     padding: 2px;
     border-radius: 50%;
-    object-fit: contain;
+    object-fit: cover;
     border: 2px solid #f0e8fa;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }

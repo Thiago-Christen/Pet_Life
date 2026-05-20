@@ -10,7 +10,8 @@ CREATE TABLE usuario (
     data_nascimento DATE NOT NULL,
     cpf CHAR(11) NOT NULL UNIQUE,
     foto_perfil VARCHAR(255)  DEFAULT NULL,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_admin BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE pet (
@@ -63,3 +64,11 @@ FROM registrodiario r
 JOIN pet p ON r.fk_pet_id     = p.pet_id
 JOIN usuario u ON p.fk_usuario_id = u.id
 ORDER BY r.data; 
+
+SELECT * FROM usuario;
+
+UPDATE usuario
+SET is_admin = TRUE
+WHERE id = 1; 
+
+#Colocar ID da conta criada para ser administrador

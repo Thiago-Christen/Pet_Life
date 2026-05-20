@@ -78,6 +78,132 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     popupClose?.addEventListener("click", () => popup.classList.remove("show"));
+
+    window.registroIdParaExcluir = null;
+
+const deleteConfirmPopupRegistro =
+    document.getElementById("deleteConfirmPopupRegistro");
+
+const deletePopupTextRegistro =
+    document.getElementById("deletePopupTextRegistro");
+
+const closeDeleteConfirmPopupRegistro =
+    document.getElementById("closeDeleteConfirmPopupRegistro");
+
+const cancelDeleteBtnRegistro =
+    document.getElementById("cancelDeleteRegistroBtn");
+
+const confirmDeleteRegistroBtn =
+    document.getElementById("confirmDeleteRegistroBtn");
+
+// Deletar registro
+window.abrirPopupDeleteRegistro = function(registroId, registroTipo) {
+
+    window.registroIdParaExcluir = parseInt(registroId);
+
+    deletePopupTextRegistro.textContent =
+        `Tem certeza que deseja excluir ${registroTipo}?`;
+
+    deleteConfirmPopupRegistro.classList.add("show");
+
+    deleteConfirmPopupRegistro.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+}
+
+function fecharPopupDelete() {
+
+    deleteConfirmPopupRegistro.classList.remove("show");
+
+    deleteConfirmPopupRegistro.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    window.registroIdParaExcluir = null;
+}
+
+closeDeleteConfirmPopupRegistro?.addEventListener(
+    "click",
+    fecharPopupDelete
+);
+
+cancelDeleteBtnRegistro?.addEventListener(
+    "click",
+    fecharPopupDelete
+);
+
+deleteConfirmPopupRegistro?.addEventListener(
+    "click",
+    (event) => {
+
+        if(event.target === deleteConfirmPopupRegistro){
+            fecharPopupDelete();
+        }
+
+    }
+);
+
+confirmDeleteRegistroBtn?.addEventListener(
+    "click",
+    async () => {
+
+        if(window.registroIdParaExcluir === null) return;
+
+        try {
+
+            const response = await fetch(
+                `/diario_delete/${window.registroIdParaExcluir}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const data = await response.json();
+
+            if(data.success){
+
+                fecharPopupDelete();
+
+                openPopup(
+                    "success",
+                    "Registro deletado",
+                    "O registro foi removido com sucesso."
+                );
+
+                setTimeout(() => {
+                    location.reload();
+                }, 1200);
+
+            } else {
+
+                fecharPopupDelete();
+
+                openPopup(
+                    "error",
+                    "Erro ao deletar",
+                    data.error ||
+                    "Não foi possível remover o registro."
+                );
+
+            }
+
+        } catch(error){
+
+            fecharPopupDelete();
+
+            openPopup(
+                "error",
+                "Erro",
+                "Falha ao conectar com o servidor."
+            );
+
+        }
+
+    }
+);
+    
     
     // Salvar registro
     recordForm?.addEventListener("submit", async (e) => {
@@ -136,25 +262,5 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     });
-    
-    // Deletar registro
-    document.querySelectorAll(".btn-delete-record").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const registroId = btn.dataset.id;
-            if (confirm("Tem certeza que deseja excluir este registro?")) {
-                try {
-                    const response = await fetch(`/diario_delete/${registroId}`, { method: "DELETE" });
-                    const result = await response.json();
-                    if (result.success) {
-                        openPopup("success", "Excluído!", "Registro removido");
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        openPopup("error", "Erro", result.error);
-                    }
-                } catch {
-                    openPopup("error", "Erro", "Erro ao excluir");
-                }
-            }
-        });
-    });
 });
+

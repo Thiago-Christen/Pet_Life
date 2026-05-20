@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Admin | PetLife{% endblock %}
+
+{% block content %}
+<div class="popup-overlay" id="deleteConfirmPopupPerfil" aria-hidden="true">
+    <div class="popup-card error">
+
+        <button type="button"
+                class="popup-close"
+                id="closeDeleteConfirmPopupPerfil">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="popup-icon">
+            <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h2>Excluir Perfil</h2>
+
+        <p id="deletePopupTextPerfil">
+            Tem certeza que deseja excluir este usuário?
+        </p>
+
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:20px;">
+            <button id="cancelDeletePerfilBtn" class="btn-cancel">
+                Cancelar
+            </button>
+
+            <button id="confirmDeletePerfilBtn" class="btn-danger2">
+                Excluir
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div class="popup-overlay" id="deleteConfirmPopupPet" aria-hidden="true">
+    <div class="popup-card error">
+
+        <button type="button"
+                class="popup-close"
+                id="closeDeleteConfirmPopupPet">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="popup-icon">
+            <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h2>Excluir Pet</h2>
+
+        <p id="deletePopupTextPet">
+            Tem certeza que deseja excluir este pet?
+        </p>
+
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:20px;">
+            <button id="cancelDeletePetBtn" class="btn-cancel">
+                Cancelar
+            </button>
+
+            <button id="confirmDeletePetBtn" class="btn-danger2">
+                Excluir
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div class="dashboard-page">
+
+    <header class="topbar mx-auto">
+        <div class="topbar-left">
+            <div class="brand">
+                <a href="/index">
+                    <img src="/static/img/logo_petLife.png" alt="PetLife" class="brand-logo">
+                </a>
+            </div>
+        </div>
+
+        <nav class="topbar-nav">
+            <a href="/dashboard" class="nav-item active">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/index" class="nav-item">
+                <i class="fa-solid fa-house"></i>
+                <span>Site</span>
+            </a>
+        </nav>
+
+        <div class="topbar-right">
+            <a href="/profile" class="profile">
+
+                {% if user.foto_perfil %}
+                    <img src="{{ user.foto_perfil }}" class="profile-img">
+                {% else %}
+                    <img src="/static/img/icone_teste.png" class="profile-img">
+                {% endif %}
+
+            </a>
+
+            <div class="notification">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-notification">1</span>
+                </div>
+
+                <a href="/logout"
+                    class="btn btn-danger-subtle text-danger d-flex align-items-center gap-2 px-3 py-2 rounded-3">
+                    <i class="bi bi-box-arrow-left"></i>
+                    Sair
+                </a>
+        </div>
+    </header>
+
+    <!-- HEADER -->
+    <section class="dashboard-header">
+        <h1>
+            <i class="fa-solid fa-shield"></i>
+            Painel Administrativo
+        </h1>
+
+        <p>
+            Gerencie usuários, pets e informações do sistema
+        </p>
+    </section>
+
+    <div class="dashboard-container">
+
+        <div class="dashboard-card users-card">
+
+            <div class="card-header">
+                <h2>
+                    <i class="fa-solid fa-users"></i>
+                    Usuários
+                </h2>
+            </div>
+
+            <div class="table-wrapper">
+
+                <table class="users-table">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>CPF</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for usuario in usuarios %}
+
+                        <tr class="user-row"
+                            data-user="{{ usuario.id }}">
+
+                            <td>{{ usuario.id }}</td>
+                            <td>{{ usuario.nome }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>{{ usuario.cpf }}</td>
+                            <td>
+                                <button
+                                    class="btn-delete"
+                                    onclick="abrirPopupDeleteAccount('{{ usuario.id }}', '{{ usuario.nome }}')">
+
+                                    <i class="fa-solid fa-trash"></i>
+                                    Excluir 
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr class="pets-row" id="pets-{{ usuario.id }}">
+                            <td colspan="5">
+
+                                <div class="pets-container">
+
+                                    {% if usuario.pets %}
+
+                                        {% for pet in usuario.pets %}
+
+                                        <div class="pet-card">
+
+                                            <div class="pet-image">
+
+                                                {% if pet.foto %}
+                                                    <img src="{{ pet.foto }}">
+                                                {% else %}
+                                                    <img src="/static/img/login_cat_dog.png">
+                                                {% endif %}
+
+                                            </div>
+
+                                            <div class="pet-info">
+
+                                                <h3>{{ pet.nome }}</h3>
+
+                                                <p>
+                                                    <strong>Espécie:</strong>
+                                                    {{ pet.especie }}
+                                                </p>
+
+                                                <p>
+                                                    <strong>Raça:</strong>
+                                                    {{ pet.raca }}
+                                                </p>
+
+                                                <p>
+                                                    <strong>Porte:</strong>
+                                                    {{ pet.porte }}
+                                                </p>
+
+                                            </div>
+
+                                            <div class="pet-actions">
+                                                <button
+                                                    class="btn-delete"
+                                                    onclick="abrirPopupDelete('{{ pet.pet_id }}', '{{ pet.nome }}')">
+
+                                                    <i class="fa-solid fa-trash"></i>
+                                                    Deletar
+
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                        {% endfor %}
+
+                                    {% else %}
+
+                                        <div class="empty-pets">
+                                            Usuário sem pets cadastrados
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="popup-overlay" id="appPopup" aria-hidden="true">
+    <div class="popup-card" id="appPopupCard" role="dialog" aria-modal="true" aria-labelledby="appPopupTitle">
+        <button type="button" class="popup-close" id="appPopupClose" aria-label="Fechar">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="popup-icon" id="appPopupIcon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <h2 id="appPopupTitle">Título</h2>
+        <p id="appPopupMessage">Mensagem</p>
+    </div>
+</div>
+
+{% endblock %}

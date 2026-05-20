@@ -1,0 +1,179 @@
+.dashboard-page{
+    min-height:100vh;
+    padding:24px;
+    background:
+    radial-gradient(circle at top, rgba(255,255,255,.05), transparent 30%),
+    linear-gradient(180deg,#6817b6 0%,#5a1497 100%);
+}
+
+.dashboard-header{
+    width:min(100%,1200px);
+    margin:30px auto;
+    color:white;
+}
+
+.dashboard-header h1{
+    font-size:2.5rem;
+    font-weight:900;
+}
+
+.dashboard-header p{
+    opacity:.8;
+    margin-top:10px;
+}
+
+.dashboard-container{
+    width:min(100%,1200px);
+    margin:auto;
+}
+
+.dashboard-card{
+    background:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+
+.card-header{
+    margin-bottom:24px;
+}
+
+.card-header h2{
+    color:#4b1d76;
+    font-weight:900;
+}
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+.users-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.users-table thead{
+    background:#f7f2fc;
+}
+
+.users-table th{
+    padding:18px;
+    text-align:left;
+    color:#4b1d76;
+}
+
+.users-table td{
+    padding:18px;
+    border-top:1px solid rgba(0,0,0,.06);
+}
+
+.user-row{
+    background:#4b1d76;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.user-row:hover{
+    background:#4b1d76cc;
+}
+
+.pets-row{
+    display:none;
+    background:#fcfbff;
+}
+
+.pets-container{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    padding:20px 0;
+}
+
+.pet-card{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:18px;
+    border-radius:18px;
+    background:#f8f4fc;
+}
+
+.pet-image img{
+    width:90px;
+    height:90px;
+    border-radius:18px;
+    object-fit:cover;
+}
+
+.pet-info{
+    flex:1;
+}
+
+.pet-info h3{
+    color:#4b1d76;
+    font-weight:900;
+    margin-bottom:10px;
+}
+
+.pet-info p{
+    margin:4px 0;
+    color:#5a2a83;
+}
+
+.pet-actions{
+    display:flex;
+    gap:12px;
+}
+
+.btn-edit,
+.btn-delete{
+    border:none;
+    padding:12px 18px;
+    border-radius:12px;
+    font-weight:700;
+    text-decoration:none;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.btn-edit{
+    background:#6817b6;
+    color:white;
+}
+
+.btn-delete{
+    background:#dc3545;
+    color:white;
+}
+
+.btn-edit:hover,
+.btn-delete:hover{
+    transform:translateY(-2px);
+}
+
+.btn-danger2{
+    border:none;
+    background:#e74c3c;
+    color:#fff;
+    padding:10px 18px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.btn-cancel{
+    border:none;
+    background:#ece8f5;
+    color:#4b1d76;
+    padding:10px 18px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.empty-pets{
+    padding:20px;
+    text-align:center;
+    color:#777;
+}

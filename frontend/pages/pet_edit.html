@@ -24,11 +24,13 @@
 
             <div class="topbar-right">
                 <a href="/profile" class="profile" aria-label="Perfil">
-                    {% if user.foto %}
-                    <img src="{{ user.foto }}" alt="Perfil" class="profile-img">
+
+                    {% if user.foto_perfil %}
+                        <img src="{{ user.foto_perfil }}" alt="Perfil" class="profile-img">
                     {% else %}
-                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                        <img src="/static/img/icone_teste.png" alt="Perfil" class="profile-img">
                     {% endif %}
+
                 </a>
                 <div class="notification">
                     <i class="fa-solid fa-bell"></i>
@@ -57,7 +59,11 @@
                             <label for="foto">Foto do Pet</label>
                             <div class="photo-upload-area" id="photoUploadArea">
                                 <input type="file" id="foto" name="foto" accept="image/*" style="display: none;">
-                                <div class="photo-preview" id="photoPreview" style="background-image: url('{{ pet.foto or '' }}'); {% if pet.foto %}background-size: cover; background-position: center;{% endif %}">
+                                <div class="photo-preview {% if pet.foto %}has-image{% endif %}" 
+                                    id="photoPreview"
+                                    {% if pet.foto %}
+                                    style="background-image: url('{{ pet.foto }}');"
+                                    {% endif %}>
                                     {% if not pet.foto %}
                                     <i class="fa-solid fa-camera"></i>
                                     <span>Clique para alterar foto</span>

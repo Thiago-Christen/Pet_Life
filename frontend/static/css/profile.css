@@ -220,15 +220,18 @@ body {
     box-shadow: 0 0 0 3px rgba(239, 176, 26, 0.12);
 }
 
-.profile-avatar-preview.has-image {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
 
 .profile-avatar-preview.has-image i,
 .profile-avatar-preview.has-image span {
     display: none;
+}
+
+.profile-avatar-preview img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    display: block;
 }
 
 .profile-avatar-preview:not(.editable) {
@@ -515,7 +518,6 @@ body {
 .profile-img {
     width: 100%;
     height: 100%;
-    transform: scale(1.65);
     object-fit: cover;
     border-radius: 50%;
 
@@ -654,6 +656,7 @@ body {
         max-width: 140px;
         max-height: 140px;
         flex: 0 0 140px;
+        
     }
 
     .profile-section-title {

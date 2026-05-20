@@ -3,10 +3,41 @@
 {% block title %}Diário de {{ pet.nome }} | PetLife{% endblock %}
 
 {% block content %}
+
+<div class="popup-overlay" id="deleteConfirmPopupRegistro" aria-hidden="true">
+    <div class="popup-card error">
+
+        <button type="button"
+                class="popup-close"
+                id="closeDeleteConfirmPopupRegistro">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="popup-icon">
+            <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h2>Excluir Registro</h2>
+
+        <p id="deletePopupTextRegistro">
+            Tem certeza que deseja excluir este registro?
+        </p>
+
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:20px;">
+            <button id="cancelDeleteRegistroBtn" class="btn-cancel">
+                Cancelar
+            </button>
+
+            <button id="confirmDeleteRegistroBtn" class="btn-danger2">
+                Excluir
+            </button>
+        </div>
+
+    </div>
+</div>
+
 <div class="diary-page">
     <div class="container py-4">
-
-        <!-- Topbar -->
         <header class="topbar mx-auto">
             <div class="topbar-left">
                 <div class="brand">
@@ -25,11 +56,13 @@
 
             <div class="topbar-right">
                 <a href="/profile" class="profile" aria-label="Perfil">
-                    {% if user.foto %}
-                    <img src="{{ user.foto }}" alt="Perfil" class="profile-img">
+
+                    {% if user.foto_perfil %}
+                        <img src="{{ user.foto_perfil }}" alt="Perfil" class="profile-img">
                     {% else %}
-                    <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" alt="Perfil" class="profile-img">
+                        <img src="/static/img/icone_teste.png" alt="Perfil" class="profile-img">
                     {% endif %}
+
                 </a>
                 <div class="notification">
                     <i class="fa-solid fa-bell"></i>
@@ -45,7 +78,7 @@
                     {% if pet.foto %}
                     <img src="{{ pet.foto }}" alt="{{ pet.nome }}">
                     {% else %}
-                    <img src="{{ request.url_for('static', path='img/pet_default.png') }}" alt="{{ pet.nome }}">
+                    <img src="/static/img/login_cat_dog.png" alt="{{ pet.nome }}">
                     {% endif %}
                 </div>
                 <div class="pet-info-header">
@@ -177,8 +210,10 @@
                                     {% endif %}
                                 </div>
                                 <div class="record-actions">
-                                    <button class="btn-delete-record" data-id="{{ registro.registro_id }}">
-                                        <i class="fa-solid fa-trash-can"></i>
+                                    <button
+                                        class="btn-delete"
+                                        onclick="abrirPopupDeleteRegistro('{{ registro.registro_id }}', '{{ registro.tipo }}')">
+                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
                             </div>
@@ -255,5 +290,8 @@
         <p id="diaryPopupMessage">Mensagem</p>
     </div>
 </div>
+
+<script>
+</script>
 
 {% endblock %}

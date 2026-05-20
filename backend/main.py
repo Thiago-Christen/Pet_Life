@@ -4,8 +4,8 @@ import os
 import shutil
 import time
 from mangum import Mangum
-from fastapi import FastAPI, Request, Form, Depends, UploadFile, File
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, Path, Request, Form, Depends, UploadFile, File
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -41,6 +41,18 @@ def verificar_sessao(request: Request):
         return None
 
     request.session["last_activity"] = time.time()
+    return user
+
+def verificar_admin(request: Request):
+
+    user = verificar_sessao(request)
+
+    if not user:
+        return None
+
+    if not user.get("is_admin"):
+        return None
+
     return user
 
 # Configuração de arquivos estáticos
@@ -79,6 +91,7 @@ def logout(request: Request):
     return RedirectResponse("/login", status_code=302)
 
 
+
 @app.post("/register_exe")
 async def register_exe(
     request: Request,
@@ -89,7 +102,6 @@ async def register_exe(
     cpfCnpj: str = Form(...),
     password: str = Form(...),
     confirmPassword: str = Form(...),
-    foto: UploadFile = File(None),
     db=Depends(get_db)
 ):
     print("DEBUG", "chamou!!!!!!!!!!!!")
@@ -108,19 +120,6 @@ async def register_exe(
 
         if idade < 18:
             raise Exception("Você precisa ter 18 anos")
-        
-        # Processar foto
-        foto_path = None
-        if foto and foto.filename:
-            upload_dir = "frontend/static/uploads/avatars"
-            os.makedirs(upload_dir, exist_ok=True)
-            ext = os.path.splitext(foto.filename)[1].lower()
-            if ext in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
-                filename = f"avatar_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
-                filepath = os.path.join(upload_dir, filename)
-                with open(filepath, "wb") as buffer:
-                    shutil.copyfileobj(foto.file, buffer)
-                foto_path = f"/static/uploads/avatars/{filename}"
 
         with db.cursor() as cursor:
             print("CONECTOU NO BANCO")
@@ -137,8 +136,8 @@ async def register_exe(
 
             sql = """
                 INSERT INTO usuario 
-                (nome, senha, email, num_telefone, data_nascimento, cpf, foto)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                (nome, senha, email, num_telefone, data_nascimento, cpf)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """
 
             cursor.execute(sql, (
@@ -147,8 +146,7 @@ async def register_exe(
                 email,
                 celular,
                 birthdate,
-                cpf,
-                foto_path
+                cpf
             ))
 
         db.commit()
@@ -194,7 +192,8 @@ async def login_exe(
                 "num_telefone": user["num_telefone"],
                 "data_nascimento": str(user["data_nascimento"]),
                 "cpf": user["cpf"],
-                "foto": user.get("foto")
+                "foto_perfil": user.get("foto_perfil"),
+                "is_admin": user["is_admin"]
             }
             request.session["last_activity"] = time.time()
             return RedirectResponse(url="/index", status_code=303)
@@ -258,6 +257,106 @@ async def index_page(request: Request, db=Depends(get_db)):
         "pets": pets
     })
 
+@app.get("/admin")
+async def admin_page(request: Request):
+
+    admin = verificar_admin(request)
+
+    if not admin:
+        return RedirectResponse("/login", status_code=303)
+
+    return templates.TemplateResponse("admin/index.html", {
+        "request": request,
+        "user": admin
+    })
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page(request: Request, db=Depends(get_db)):
+    user = verificar_sessao(request)
+
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
+    if not user.get("is_admin"):
+        return RedirectResponse("/index", status_code=303)
+
+    with db.cursor(pymysql.cursors.DictCursor) as cursor:
+
+        cursor.execute("SELECT * FROM usuario")
+        usuarios = cursor.fetchall()
+
+        for usuario in usuarios:
+            cursor.execute("""
+                SELECT pet.*, usuario.nome AS dono
+                FROM pet
+                JOIN usuario ON usuario.id = pet.fk_usuario_id
+                WHERE pet.fk_usuario_id = %s
+            """, (usuario["id"],))
+
+            usuario["pets"] = cursor.fetchall()
+
+    return templates.TemplateResponse(
+        "admin/dashboard.html",
+        {
+            "request": request,
+            "user": user,
+            "usuarios": usuarios
+        }
+    )
+
+@app.delete("/user_delete/{user_id}")
+async def user_delete(
+    request: Request,
+    user_id: int,
+    db=Depends(get_db)
+):
+    user = verificar_sessao(request)
+
+    if not user:
+        return JSONResponse(
+            status_code=401,
+            content={
+                "success": False,
+                "error": "Usuário não logado"
+            }
+        )
+
+    if not user.get("is_admin"):
+        return JSONResponse(
+            status_code=403,
+            content={
+                "success": False,
+                "error": "Acesso negado"
+            }
+        )
+
+    try:
+
+        with db.cursor() as cursor:
+
+            cursor.execute(
+                "DELETE FROM usuario WHERE id = %s",
+                (user_id,)
+            )
+
+        db.commit()
+
+        return {
+            "success": True
+        }
+
+    except Exception as e:
+
+        db.rollback()
+
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+    finally:
+        db.close()
 
 @app.get("/dicas", response_class=HTMLResponse)
 async def dicas_page(request: Request):
@@ -290,43 +389,221 @@ async def profile_page(request: Request):
 @app.post("/profile_update")
 async def profile_update(
     request: Request,
+    user_id: int,
     nome: str = Form(...),
     email: str = Form(...),
     num_telefone: str = Form(...),
     data_nascimento: str = Form(...),
     cpf: str = Form(...),
     senha: str = Form(None),
+    foto_perfil: UploadFile = File(None),
     db=Depends(get_db)
 ):
     user = verificar_sessao(request)
+
     if not user:
-        return {"error": "Usuário não logado"}
+        return JSONResponse(
+            status_code=401,
+            content={
+                "success": False,
+                "error": "Usuário não logado"
+            }
+        )
+
+    foto_path = None
 
     try:
-        with db.cursor() as cursor:
-            cursor.execute("SELECT id FROM usuario WHERE email = %s AND id != %s", (email, user["id"]))
-            if cursor.fetchone():
-                raise Exception("E-mail já cadastrado por outro usuário")
 
-            cursor.execute("SELECT id FROM usuario WHERE cpf = %s AND id != %s", (cpf, user["id"]))
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+
+            cursor.execute(
+                "SELECT id, foto_perfil FROM usuario WHERE id = %s",
+                (user["id"],)
+            )
+
+            current_user = cursor.fetchone()
+
+            if not current_user:
+                return JSONResponse(
+                    status_code=404,
+                    content={
+                        "success": False,
+                        "error": "Usuário não encontrado"
+                    }
+                )
+
+            cursor.execute(
+                "SELECT id FROM usuario WHERE email = %s AND id != %s",
+                (email, user["id"])
+            )
+
             if cursor.fetchone():
-                raise Exception("CPF já cadastrado por outro usuário")
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "success": False,
+                        "error": "E-mail já cadastrado por outro usuário"
+                    }
+                )
+
+            cursor.execute(
+                "SELECT id FROM usuario WHERE cpf = %s AND id != %s",
+                (cpf, user["id"])
+            )
+
+            if cursor.fetchone():
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "success": False,
+                        "error": "CPF já cadastrado por outro usuário"
+                    }
+                )
+            
+            if foto_perfil and foto_perfil.filename:
+
+                upload_dir = "frontend/static/uploads/perfil"
+
+                os.makedirs(upload_dir, exist_ok=True)
+
+                ext = os.path.splitext(
+                    foto_perfil.filename
+                )[1].lower()
+
+                if ext in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
+
+                    # tamanho do arquivo
+                    foto_perfil.file.seek(0, os.SEEK_END)
+
+                    file_size = foto_perfil.file.tell()
+
+                    foto_perfil.file.seek(0)
+
+                    # máximo 5MB
+                    if file_size <= 5 * 1024 * 1024:
+
+                        filename = f"user_{user['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
+
+                        filepath = os.path.join(
+                            upload_dir,
+                            filename
+                        )
+
+                        with open(filepath, "wb") as buffer:
+                            shutil.copyfileobj(
+                                foto_perfil.file,
+                                buffer
+                            )
+
+                        foto_path = f"/static/uploads/perfil/{filename}"
+
+                        # remove foto antiga
+                        old_foto = current_user.get(
+                            "foto_perfil"
+                        )
+
+                        if old_foto:
+
+                            old_path = "frontend" + old_foto
+
+                            if os.path.exists(old_path):
+                                try:
+                                    os.remove(old_path)
+                                except:
+                                    pass
 
             if senha:
-                senha_hash = bcrypt.hashpw(senha.encode(), bcrypt.gensalt()).decode("utf-8")
-                sql = """
-                    UPDATE usuario 
-                    SET nome = %s, email = %s, num_telefone = %s, data_nascimento = %s, cpf = %s, senha = %s
-                    WHERE id = %s
-                """
-                cursor.execute(sql, (nome, email, num_telefone, data_nascimento, cpf, senha_hash, user["id"]))
+
+                senha_hash = bcrypt.hashpw(
+                    senha.encode(),
+                    bcrypt.gensalt()
+                ).decode("utf-8")
+
+                if foto_path:
+
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s,
+                            senha = %s,
+                            foto_perfil = %s
+                        WHERE id = %s
+                    """, (
+                        nome,
+                        email,
+                        num_telefone,
+                        data_nascimento,
+                        cpf,
+                        senha_hash,
+                        foto_path,
+                        user["id"]
+                    ))
+
+                else:
+
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s,
+                            senha = %s
+                        WHERE id = %s
+                    """, (
+                        nome,
+                        email,
+                        num_telefone,
+                        data_nascimento,
+                        cpf,
+                        senha_hash,
+                        user["id"]
+                    ))
+
             else:
-                sql = """
-                    UPDATE usuario 
-                    SET nome = %s, email = %s, num_telefone = %s, data_nascimento = %s, cpf = %s
-                    WHERE id = %s
-                """
-                cursor.execute(sql, (nome, email, num_telefone, data_nascimento, cpf, user["id"]))
+
+                if foto_path:
+
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s,
+                            foto_perfil = %s
+                        WHERE id = %s
+                    """, (
+                        nome,
+                        email,
+                        num_telefone,
+                        data_nascimento,
+                        cpf,
+                        foto_path,
+                        user["id"]
+                    ))
+
+                else:
+
+                    cursor.execute("""
+                        UPDATE usuario
+                        SET nome = %s,
+                            email = %s,
+                            num_telefone = %s,
+                            data_nascimento = %s,
+                            cpf = %s
+                        WHERE id = %s
+                    """, (
+                        nome,
+                        email,
+                        num_telefone,
+                        data_nascimento,
+                        cpf,
+                        user["id"]
+                    ))
 
         db.commit()
 
@@ -337,14 +614,26 @@ async def profile_update(
             "num_telefone": num_telefone,
             "data_nascimento": data_nascimento,
             "cpf": cpf,
-            "foto": user.get("foto")
+            "foto_perfil": foto_path if foto_path else current_user.get("foto_perfil")
         }
 
-        return {"success": "Perfil atualizado com sucesso"}
+        return {
+            "success": True,
+            "message": "Perfil atualizado com sucesso"
+        }
 
     except Exception as e:
+
         db.rollback()
-        return {"error": str(e)}
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "error": str(e)
+            }
+        )
+
     finally:
         db.close()
 
@@ -353,19 +642,31 @@ async def profile_update(
 async def profile_delete(request: Request, db=Depends(get_db)):
     user = verificar_sessao(request)
     if not user:
-        return {"error": "Usuário não logado"}
+        return JSONResponse(status_code=401, content={"success": False, "error": "Usuário não logado"})
 
     try:
-        with db.cursor() as cursor:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("SELECT foto_perfil FROM usuario WHERE id = %s", (user["id"],))
+            row = cursor.fetchone()
+
+            if row and row.get("foto_perfil"):
+                photo_path = Path("frontend/static") / row["foto_perfil"]
+                if photo_path.exists():
+                    try:
+                        photo_path.unlink()
+                    except Exception:
+                        pass
+
             cursor.execute("DELETE FROM usuario WHERE id = %s", (user["id"],))
 
         db.commit()
         request.session.clear()
-        return {"success": "Conta deletada com sucesso"}
+        return {"success": True, "message": "Conta deletada com sucesso"}
 
     except Exception as e:
         db.rollback()
-        return {"error": str(e)}
+        return {"success": False, "error": str(e)}
+
     finally:
         db.close()
 
@@ -514,7 +815,7 @@ async def pet_edit_exe(
             upload_dir = "frontend/static/uploads/pets"
             os.makedirs(upload_dir, exist_ok=True)
             ext = os.path.splitext(foto.filename)[1].lower()
-            if ext in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
+            if ext not in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
                 filename = f"pet_{user['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
                 filepath = os.path.join(upload_dir, filename)
                 with open(filepath, "wb") as buffer:
@@ -555,7 +856,10 @@ async def pet_delete(request: Request, pet_id: int, db=Depends(get_db)):
     
     try:
         with db.cursor() as cursor:
-            cursor.execute("DELETE FROM pet WHERE pet_id = %s AND fk_usuario_id = %s", (pet_id, user["id"]))
+            if user.get("is_admin"):
+                cursor.execute("DELETE FROM pet WHERE pet_id = %s", (pet_id,))
+            else:
+                cursor.execute("DELETE FROM pet WHERE pet_id = %s AND fk_usuario_id = %s", (pet_id, user["id"]))
         
         db.commit()
         return {"success": True}

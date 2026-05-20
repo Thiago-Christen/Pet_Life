@@ -95,16 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
         element.textContent = "";
     }
 
-    togglePasswordBtn.addEventListener("click", function () {
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            togglePasswordBtn.textContent = "Ocultar";
-        } else {
-            passwordInput.type = "password";
-            togglePasswordBtn.textContent = "Mostrar";
-        }
-    });
-
     form.addEventListener("submit", function (event) {
         event.preventDefault();
 
