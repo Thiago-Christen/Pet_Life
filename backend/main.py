@@ -389,7 +389,6 @@ async def profile_page(request: Request):
 @app.post("/profile_update")
 async def profile_update(
     request: Request,
-    user_id: int,
     nome: str = Form(...),
     email: str = Form(...),
     num_telefone: str = Form(...),
