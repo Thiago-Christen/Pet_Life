@@ -258,6 +258,26 @@
     font-weight: 600;
 }
 
+.logout-btn {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c !important;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-size: 1.1rem;
+    }
+
+    .logout-btn:hover {
+        background: #e74c3c !important;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
 @media (max-width: 768px) {
     .pet-register-page {
         padding: 16px;

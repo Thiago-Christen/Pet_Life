@@ -7,14 +7,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const birthdateInput = document.getElementById("data_nascimento");
     const cpfCnpjInput = document.getElementById("cpf");
     const passwordInput = document.getElementById("senha_account");
-    
+    const currentPasswordInput = document.getElementById("now_senha_account");
+
     const nameError = document.getElementById("nameError");
     const emailError = document.getElementById("emailError");
     const phoneError = document.getElementById("phoneError");
     const birthdateError = document.getElementById("birthdateError");
     const cpfCnpjError = document.getElementById("cpfCnpjError");
-    const passwordError = document.getElementById("passwordError");
-  
+    const passwordError = document.getElementById("passwordError")
+      
+    console.log(form);
+    console.log(passwordInput);
+    console.log(nameError);
+    console.log(phoneError);
+    console.log(birthdateError);
+    console.log(cpfCnpjError);
+    console.log(passwordError);
+
     const nameRegex = /^.{5,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
@@ -92,7 +101,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function clearError(element) {
-        element.textContent = "";
+        if (element) {
+        element.textContent = "";}
     }
 
     form.addEventListener("submit", function (event) {
@@ -106,7 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
         clearError(birthdateError);
         clearError(cpfCnpjError);
         clearError(passwordError);
-        clearError(confirmPasswordError);
 
         const name = nameInput.value.trim();
         const email = emailInput.value.trim();
@@ -114,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const birthdate = birthdateInput.value;
         const cpfCnpj = cpfCnpjInput.value.trim();
         const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
+        const currentPassword = currentPasswordInput.value;
 
         if (!nameRegex.test(name)) {
             showError(nameError, "Nome deve ter pelo menos 5 caracteres.");
@@ -181,10 +190,6 @@ document.addEventListener("DOMContentLoaded", function () {
             valid = false;
         }
 
-        if (password !== confirmPassword) {
-            showError(confirmPasswordError, "As senhas não coincidem.");
-            valid = false;
-        }
         if (valid === true){
             form.submit();
         }

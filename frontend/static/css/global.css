@@ -14,7 +14,7 @@
     --radius-lg: 24px;
     --radius-md: 18px;
     --radius-sm: 12px;
-}
+}   
 
 * {
     margin: 0;
@@ -154,21 +154,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.notification {
-    position: relative;
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    color: var(--purple-card);
-    background: rgba(91, 23, 143, 0.08);
-    cursor: pointer;
-}
-
-.notification i {
-    font-size: 1.3rem;
-}
 
 .badge-notification {
     position: absolute;
@@ -279,6 +264,8 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
+
+
 
 @media (max-width: 991px) {
     .dashboard-page {

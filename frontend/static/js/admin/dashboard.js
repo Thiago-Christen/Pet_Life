@@ -62,7 +62,7 @@ function fecharPopupDelete() {
     petIdParaExcluir = null;
 }
 
-closeDeleteConfirmPopup?.addEventListener("click", fecharPopupDelete);
+closeDeleteConfirmPopupPerfil?.addEventListener("click", fecharPopupDelete);
 
 cancelDeletePetBtn?.addEventListener("click", fecharPopupDelete);
 
@@ -144,7 +144,7 @@ function fecharPopupDeleteAccount() {
     userIdParaExcluir = null;
 }
 
-closeDeleteConfirmPopup?.addEventListener("click", fecharPopupDeleteAccount);
+closeDeleteConfirmPopupPerfil?.addEventListener("click", fecharPopupDeleteAccount);
 
 cancelDeletePerfilBtn?.addEventListener("click", fecharPopupDeleteAccount);
 
@@ -194,24 +194,98 @@ confirmDeletePerfilBtn?.addEventListener("click", async () => {
     }
 });
 
-    const rows = document.querySelectorAll(".user-row");
 
-    rows.forEach(function(row){
+const rows = document.querySelectorAll(".user-row");
 
-        row.addEventListener("click", function(){
+rows.forEach(function (row) {
 
-            const userId = row.getAttribute("data-user");
+    row.addEventListener("click", function (e) {
 
-            const petsRow = document.getElementById("pets-" + userId);
+        if (e.target.closest("button")) return;
 
-            if(petsRow.style.display === "table-row"){
-                petsRow.style.display = "none";
-            } else {
-                petsRow.style.display = "table-row";
-            }
+        const userId = this.getAttribute("data-user");
+        const petsRow = document.getElementById("pets-" + userId);
 
-        });
+        if (!petsRow) return;
+
+        // TOGGLE com style
+        if (petsRow.style.display === "table-row") {
+            petsRow.style.display = "none";
+        } else {
+            petsRow.style.display = "table-row";
+        }
 
     });
 
+});
+
+
+window.promoverUsuario = async function(userId, nome) {
+
+    try {
+
+        const response = await fetch(`/user_promote/${userId}`, {
+            method: "PUT"
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+
+            openPopup(
+                "success",
+                "Usuário promovido",
+                `${nome} agora é administrador`
+            );
+
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+
+        } else {
+
+            openPopup(
+                "error",
+                "Erro",
+                result.error
+            );
+
+        }
+
+    } catch(err){
+
+        openPopup(
+            "error",
+            "Erro",
+            "Falha ao conectar ao servidor"
+        );
+
+    }
+
+}
+
+window.alterarAdmin = async function(userId, isAdmin, nome) {
+
+    const url = isAdmin
+        ? `/user_demote/${userId}`
+        : `/user_promote/${userId}`;
+
+    const action = isAdmin ? "removido do admin" : "promovido a admin";
+
+    try {
+        const response = await fetch(url, { method: "PUT" });
+        const result = await response.json();
+
+        if (result.success) {
+            openPopup("success", "Sucesso", `${nome} foi ${action}`);
+
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            openPopup("error", "Erro", result.error);
+        }
+
+    } catch (err) {
+        openPopup("error", "Erro", "Falha no servidor");
+    }
+}
 });

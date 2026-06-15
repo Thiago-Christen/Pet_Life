@@ -32,10 +32,9 @@
                     {% endif %}
 
                 </a>
-                <div class="notification">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="badge-notification">1</span>
-                </div>
+                <a href="/logout" class="logout-btn" title="Sair">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                </a>
             </div>
         </header>
 
@@ -52,7 +51,7 @@
                 <p>Atualize as informações do seu pet</p>
             </div>
 
-            <form id="petForm" action="/pet_edit_exe/{{ pet.pet_id }}" method="post" enctype="multipart/form-data" novalidate>
+            <form id="petEditForm" action="/pet_edit_exe/{{ pet.pet_id }}" method="post" enctype="multipart/form-data" novalidate>
                 <div class="row g-4">
                     <div class="col-12 col-md-6">
                         <div class="form-group photo-group">
@@ -188,6 +187,26 @@
     align-items: center;
     gap: 8px;
 }
+
+    .logout-btn {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-size: 1.1rem;
+    }
+
+    .logout-btn:hover {
+        background: #e74c3c;
+        color: #fff;
+        transform: scale(1.05);
+    }
 </style>
 
 <script>
@@ -241,4 +260,5 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+<script src="{{ request.url_for('static', path='js/pet_register.js') }}"></script>
 {% endblock %}

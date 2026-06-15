@@ -147,7 +147,11 @@ deleteConfirmPopupRegistro?.addEventListener(
 
 confirmDeleteRegistroBtn?.addEventListener(
     "click",
-    async () => {
+    async (e) => {
+
+        e.preventDefault();
+
+        console.log("CLICOU NO BOTÃO DELETE");  
 
         if(window.registroIdParaExcluir === null) return;
 
@@ -160,7 +164,11 @@ confirmDeleteRegistroBtn?.addEventListener(
                 }
             );
 
+            console.log("Status:", response.status);
+
             const data = await response.json();
+
+            console.log("Resposta:", data);
 
             if(data.success){
 
@@ -208,6 +216,7 @@ confirmDeleteRegistroBtn?.addEventListener(
     // Salvar registro
     recordForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
+        event.stopImmediatePropagation();
         clearAllErrors();
         
         const tipo = document.getElementById("tipo")?.value;

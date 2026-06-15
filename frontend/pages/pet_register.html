@@ -24,20 +24,15 @@
 
             <div class="topbar-right">
                 <a href="/profile" class="profile" aria-label="Perfil">
-                     {% if user.foto_perfil %}
-                        <img src="{{ request.url_for('static', path=user.foto_perfil) }}" 
-                            alt="Perfil" 
-                            class="profile-img">
+                    {% if user.foto_perfil %}
+                        <img src="{{ user.foto_perfil }}" alt="Perfil" class="profile-img">
                     {% else %}
-                        <img src="{{ request.url_for('static', path='img/icone_teste.png') }}" 
-                            alt="Perfil" 
-                            class="profile-img">
+                        <img src="/static/img/icone_teste.png" alt="Perfil" class="profile-img">
                     {% endif %}
                 </a>
-                <div class="notification">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="badge-notification">1</span>
-                </div>
+                <a href="/logout" class="logout-btn" title="Sair">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                </a>
             </div>
         </header>
 
@@ -118,7 +113,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="peso">Peso (kg)</label>
+                            <label for="peso">Peso (kg) <span class="required">*</span></label>
                             <input type="number" id="peso" name="peso" class="form-control" step="0.01" placeholder="Ex: 5.5" min="0">
                             <small class="error" id="pesoError"></small>
                         </div>
@@ -167,4 +162,32 @@
         <p id="petPopupMessage">Mensagem</p>
     </div>
 </div>
+
+
+<style>
+    .logout-btn {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-size: 1.1rem;
+    }
+
+    .logout-btn:hover {
+        background: #e74c3c;
+        color: #fff;
+        transform: scale(1.05);
+    }
+</style>
+
+{% block scripts %}
+<script src="{{ request.url_for('static', path='js/pet_register.js') }}"></script>
+{% endblock %}
+
 {% endblock %}

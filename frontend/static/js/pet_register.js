@@ -1,5 +1,12 @@
 document.addEventListener("DOMContentLoaded", function() {
+
+    console.log("pet.js carregou");
+
     const form = document.getElementById("petForm");
+    const formEdit = document.getElementById("petEditForm");
+
+    console.log("form:", form);
+    console.log("formEdit:", formEdit);
     
     // Elementos
     const photoInput = document.getElementById("foto");
@@ -153,10 +160,21 @@ document.addEventListener("DOMContentLoaded", function() {
             clearError("porteError");
         });
     });
+
+    let isSubmitting = false;
     
     // Validação do formulário
-    form?.addEventListener("submit", async function(event) {
+    form?.addEventListener("submit", submitPetForm);
+    formEdit?.addEventListener("submit", submitPetForm);
+    
+    async function submitPetForm(event) {
+        console.log("SUBMIT DISPAROU");
         event.preventDefault();
+        event.stopImmediatePropagation();
+        
+        if (isSubmitting) return; 
+        isSubmitting = true;
+
         clearAllErrors();
         
         let valid = true;
@@ -222,21 +240,38 @@ document.addEventListener("DOMContentLoaded", function() {
             valid = false;
         }
         
-        if (!valid) return;
+        if (!valid) {
+            isSubmitting = false;
+            return;
+        }
         
         // Enviar formulário via fetch
-        const formData = new FormData(form);
+        const currentForm = event.target;
+        const dataToSend = new FormData(currentForm);
         
         try {
-            const response = await fetch(form.action, {
+            const response = await fetch(currentForm.action, {
                 method: "POST",
-                body: formData
+                body: dataToSend
             });
             
             const data = await response.json();
             
             if (data.success) {
-                openPopup("success", "Pet cadastrado!", data.message || `${nome} foi adicionado com sucesso!`);
+                if (currentForm.id === "petForm") {
+                    openPopup(
+                        "success",
+                        "Pet cadastrado!",
+                        data.message || `${nome} foi adicionado com sucesso!`
+                    );
+                }
+                if (currentForm.id === "petEditForm") {
+                    openPopup(
+                        "success",
+                        "Pet atualizado!",
+                        data.message || `${nome} foi atualizado com sucesso!`
+                    );
+                }
                 setTimeout(() => {
                     window.location.href = "/index";
                 }, 2000);
@@ -251,9 +286,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (data.errors.raca) showError("racaError", data.errors.raca);
                 }
                 openPopup("error", "Erro no cadastro", data.error || "Verifique os dados informados");
+                isSubmitting = false;
             }
         } catch (error) {
             openPopup("error", "Erro", "Não foi possível cadastrar o pet");
+            isSubmitting = false;
+        } finally {
+            isSubmitting = false;
         }
-    });
+    }
 });

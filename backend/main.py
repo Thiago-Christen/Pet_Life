@@ -4,7 +4,8 @@ import os
 import shutil
 import time
 from mangum import Mangum
-from fastapi import FastAPI, Path, Request, Form, Depends, UploadFile, File
+from fastapi import FastAPI, Request, Form, Depends, UploadFile, File
+from pathlib import Path
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -70,18 +71,22 @@ async def index(request: Request):
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
     flash = request.session.pop("flash", None)
+    form_data = request.session.pop("form_data", {})
     return templates.TemplateResponse("register.html", {
         "request": request,
-        "flash": flash
+        "flash": flash,
+        "form_data": form_data
     })
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     flash = request.session.pop("flash", None)
+    form_data = request.session.pop("form_data", {})
     return templates.TemplateResponse("login.html", {
         "request": request,
-        "flash": flash
+        "flash": flash,
+        "form_data": form_data
     })
 
 
@@ -161,9 +166,17 @@ async def register_exe(
 
     except Exception as e:
         request.session["flash"] = {
-            "tipo": "erro",
-            "header": "Erro no cadastro",
-            "texto": str(e)
+        "tipo": "erro",
+        "header": "Erro no cadastro",
+        "texto": str(e)
+        }
+
+        request.session["form_data"] = {
+            "nome": nome,
+            "email": email,
+            "phone": phone,
+            "birthdate": birthdate,
+            "cpfCnpj": cpfCnpj
         }
 
         return RedirectResponse(url="/register", status_code=303)
@@ -210,6 +223,9 @@ async def login_exe(
             "tipo": "erro",
             "header": "Erro no login",
             "texto": str(e)
+        }
+        request.session["form_data"] = {
+            "email": email
         }
         return RedirectResponse(url="/login", status_code=303)
 
@@ -358,6 +374,49 @@ async def user_delete(
     finally:
         db.close()
 
+@app.put("/user_promote/{user_id}")
+async def promote_user(request: Request, user_id: int, db=Depends(get_db)):
+
+    user = verificar_sessao(request)
+
+    if not user or not user.get("is_admin"):
+        return JSONResponse(
+            status_code=403,
+            content={"success": False, "error": "Acesso negado"}
+        )
+
+    try:
+        with db.cursor() as cursor:
+
+            cursor.execute(
+                "UPDATE usuario SET is_admin = 1 WHERE id = %s",
+                (user_id,)
+            )
+
+        db.commit()
+
+        return {"success": True}
+
+    except Exception as e:
+        db.rollback()
+        return {"success": False, "error": str(e)}
+
+    finally:
+        db.close()
+
+@app.put("/user_demote/{user_id}")
+async def demote(user_id: int, db=Depends(get_db)):
+
+    with db.cursor() as cursor:
+        cursor.execute(
+            "UPDATE usuario SET is_admin = 0 WHERE id = %s",
+            (user_id,)
+        )
+
+    db.commit()
+    return {"success": True}
+
+
 @app.get("/dicas", response_class=HTMLResponse)
 async def dicas_page(request: Request):
     user = verificar_sessao(request)
@@ -389,12 +448,12 @@ async def profile_page(request: Request):
 @app.post("/profile_update")
 async def profile_update(
     request: Request,
-    user_id: int,
     nome: str = Form(...),
     email: str = Form(...),
     num_telefone: str = Form(...),
     data_nascimento: str = Form(...),
     cpf: str = Form(...),
+    senha_atual: str = Form(None),
     senha: str = Form(None),
     foto_perfil: UploadFile = File(None),
     db=Depends(get_db)
@@ -417,11 +476,42 @@ async def profile_update(
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
 
             cursor.execute(
-                "SELECT id, foto_perfil FROM usuario WHERE id = %s",
+                """
+                SELECT id, foto_perfil, senha
+                FROM usuario
+                WHERE id = %s
+                """,
                 (user["id"],)
             )
 
             current_user = cursor.fetchone()
+
+            if senha:
+                if not senha_atual:
+                    return JSONResponse(
+                        status_code=400,
+                        content={
+                            "success": False,
+                            "error": "Informe a senha atual para alterar a senha"
+                        }
+                    )
+
+                if not bcrypt.checkpw(
+                    senha_atual.encode("utf-8"),
+                    current_user["senha"].encode("utf-8")
+                ):
+                    return JSONResponse(
+                        status_code=400,
+                        content={
+                            "success": False,
+                            "error": "Senha atual incorreta"
+                        }
+                    )
+
+                senha_hash = bcrypt.hashpw(
+                    senha.encode("utf-8"),
+                    bcrypt.gensalt()
+                ).decode("utf-8")
 
             if not current_user:
                 return JSONResponse(
@@ -513,11 +603,6 @@ async def profile_update(
                                     pass
 
             if senha:
-
-                senha_hash = bcrypt.hashpw(
-                    senha.encode(),
-                    bcrypt.gensalt()
-                ).decode("utf-8")
 
                 if foto_path:
 
@@ -650,7 +735,7 @@ async def profile_delete(request: Request, db=Depends(get_db)):
             row = cursor.fetchone()
 
             if row and row.get("foto_perfil"):
-                photo_path = Path("frontend/static") / row["foto_perfil"]
+                photo_path = Path("frontend") / row["foto_perfil"].lstrip("/")
                 if photo_path.exists():
                     try:
                         photo_path.unlink()
@@ -815,7 +900,7 @@ async def pet_edit_exe(
             upload_dir = "frontend/static/uploads/pets"
             os.makedirs(upload_dir, exist_ok=True)
             ext = os.path.splitext(foto.filename)[1].lower()
-            if ext not in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
+            if ext in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
                 filename = f"pet_{user['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
                 filepath = os.path.join(upload_dir, filename)
                 with open(filepath, "wb") as buffer:

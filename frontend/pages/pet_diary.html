@@ -64,10 +64,9 @@
                     {% endif %}
 
                 </a>
-                <div class="notification">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="badge-notification">1</span>
-                </div>
+                <a href="/logout" class="logout-btn" title="Sair">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                </a>
             </div>
         </header>
 
@@ -291,7 +290,30 @@
     </div>
 </div>
 
-<script>
-</script>
+<style>
+    .logout-btn {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-size: 1.1rem;
+    }
 
+    .logout-btn:hover {
+        background: #e74c3c;
+        color: #fff;
+        transform: scale(1.05);
+    }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ request.url_for('static', path='js/pet_diary.js') }}"></script>
 {% endblock %}

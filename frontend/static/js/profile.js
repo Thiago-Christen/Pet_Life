@@ -1,4 +1,4 @@
- document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
         const accountForm = document.getElementById("account-form");
         const settingsForm = document.getElementById("settings-form");
 
@@ -114,7 +114,7 @@
 
         function clearError(id) {
             const el = document.getElementById(id);
-            if (el) el.textContent = "";
+            if (el) {el.textContent = "";}
         }
 
         function clearAllErrors() {
@@ -321,7 +321,7 @@
         bindMask(phoneInput, formatPhone);
         enableEditToggle();
         enablePhotoUpload(false);
-    });
+
     
     const deleteBtn = document.getElementById("delete-account-btn");
     const deleteConfirmPopup = document.getElementById("deleteConfirmPopup");
@@ -378,3 +378,5 @@
             openPopup("error", "Erro", "Falha ao excluir a conta.");
         }
     });
+
+});
